@@ -1,0 +1,12 @@
+@font-face {
+    font-family: 'Color Font';
+    src: url(color-font.ttf);
+}
+@font-face {
+    font-family: 'Module Font';
+    src: url(module-font.ttf);
+}
+@font-face {
+    font-family: 'Keyboard Font';
+    src: url(keyboard-font.ttf);
+}

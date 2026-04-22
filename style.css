@@ -1,7 +1,3 @@
-@font-face {
-    font-family: 'Color Font';
-    src: url(color-font.ttf);
-}
 *{
     margin: 0;
 }
@@ -13,17 +9,21 @@ body{
     display: flex;
     justify-content: space-around;
     align-items: center;
-    height: 50px;
+    height: 10vh;
     width: 100%;
     font-family: 'Color Font';
+    font-size: 4.5vh;
 }
 .palette *{
-    height: 50px;
+    height: 100%;
     width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
     transition-duration: 0.3s;
+}
+.palette *:hover{
+    cursor: pointer;
 }
 .red{
     color: #f00;
@@ -123,13 +123,14 @@ body{
     width: 60%;
 }
 .screens *{
-    background-color: #000;
     margin-top: 2%;
     width: 100%;
     height: 60%;
 }
-.screens * *{
-    display: none;
+input{
+    width: 100%;
+    height: 100%;
+    text-align: center;
 }
 .right-part{
     width: 40%;
@@ -144,7 +145,7 @@ body{
     align-items: flex-start;
 }
 .status-light{
-    background-color: #777;
+    background-color: #223;
     border-radius: 50%;
     width: 30%;
     aspect-ratio: 1/1;
@@ -159,21 +160,49 @@ body{
     align-items: flex-start;
 }
 .arrows *{
-    background-color: #000;
     width: 40%;
     aspect-ratio: 1/1;
+
+}
+.arrow{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+.arrow *{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.p2, .arrow-input{
+    display: none;
 }
 .submit{
     height: 20%;
     width: 90%;
     margin-left: 5%;
-    background-color: #000;
+}
+.screen{
+    font-family: 'Module Font';
+    background-color: #111;
+    color: #fff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5vw;
+}
+.screen:hover{
+    cursor: pointer;
 }
 .keyboard{
     height: 35%;
     width: 100%;
-}
-.key{
-    border-radius: 50%;
-    background-color: #000;
+    font-family: 'Keyboard Font';
+    font-size: 3.1vw;
+    text-align: center;
+    line-height: 1.2;
+    color: #111
 }
