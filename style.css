@@ -27,79 +27,79 @@ body{
 }
 .red{
     color: #f00;
-    border: #222 solid 1px;
+    border: #222 solid 1vh;
 }
 .red:hover{
-    border: #f00 solid 1px;
+    border: #f00 solid 1vh;
 }
 .orange{
     color: #f70;
-    border: #222 solid 1px;
+    border: #222 solid 1vh;
 }
 .orange:hover{
-    border: #f70 solid 1px;
+    border: #f70 solid 1vh;
 }
 .yellow{
     color: #ff0;
-    border: #222 solid 1px;
+    border: #222 solid 1vh;
 }
 .yellow:hover{
-    border: #ff0 solid 1px;
+    border: #ff0 solid 1vh;
 }
 .green{
     color: #0f0;
-    border: #222 solid 1px;
+    border: #222 solid 1vh;
 }
 .green:hover{
-    border: #0f0 solid 1px;
+    border: #0f0 solid 1vh;
 }
 .blue{
     color: #00f;
-    border: #222 solid 1px;
+    border: #222 solid 1vh;
 }
 .blue:hover{
-    border: #00f solid 1px;
+    border: #00f solid 1vh;
 }
 .indigo{
     color: #107;
-    border: #222 solid 1px;
+    border: #222 solid 1vh;
 }
 .indigo:hover{
-    border: #107 solid 1px;
+    border: #107 solid 1vh;
 }
 .violet{
     color: #a0f;
-    border: #222 solid 1px;
+    border: #222 solid 1vh;
 }
 .violet:hover{
-    border: #a0f solid 1px;
+    border: #a0f solid 1vh;
 }
 .white{
     color: #fff;
-    border: #222 solid 1px;
+    border: #222 solid 1vh;
 }
 .white:hover{
-    border: #fff solid 1px;
+    border: #fff solid 1vh;
 }
 .gray{
     color: #777;
-    border: #222 solid 1px;
+    border: #222 solid 1vh;
 }
 .gray:hover{
-    border: #777 solid 1px;
+    border: #777 solid 1vh;
 }
 .black{
     color: #000;
-    border: #222 solid 1px;
+    border: #222 solid 1vh;
 }
 .black:hover{
-    border: #000 solid 1px;
+    border: #000 solid 1vh;
 }
 .module-container{
     display: flex;
     width: 100%;
     justify-content: center;
-    margin-top: 50px;
+    margin-top: 5vw;
 }
 .module{
     background-color: #f00;
@@ -107,7 +107,7 @@ body{
     aspect-ratio: 1/1;
 }
 .module *{
-    margin: 2px;
+    margin: 0.2vw;
 }
 .top-part{
     height: 65%;
@@ -203,6 +203,6 @@ input{
     font-family: 'Keyboard Font';
     font-size: 3.1vw;
     text-align: center;
-    line-height: 1.2;
+    line-height: 1.1;
     color: #111
 }
