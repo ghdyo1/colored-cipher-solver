@@ -17,6 +17,9 @@ const edgeworks=[
 ];
 let page=1;
 let color="r";
+let answer;
+let mode="input";
+
 import {red} from "/solvers/red.js";
 
 function solve(){
@@ -24,15 +27,19 @@ function solve(){
     let edgework=[];
     for(let i=0;i<2;i++){
         for(let j=0;j<3;j++){
-            inputs.push(document.querySelector("#"+["t","m","b"][j]+String(i+1)).value.toLowerCase());
+            inputs.push(document.querySelector("#"+["t","m","b"][j]+String(i+1)).value.toLowerCase().trim());
         }
     }
     if(color=="k"){
         for(let i=0;i<2;i++){
-            inputs.push(document.querySelectorAll(".arrow-input")[i].value.toLowerCase());
+            inputs.push(document.querySelectorAll(".arrow-input")[i].value.toLowerCase().trim());
         }
     }
-    console.log(inputs)
+    document.querySelectorAll(".edgework input").forEach(a=>{edgework.push(a.value)});
+    switch(color){
+        case "r":
+            return red(edgework,inputs);
+    }
 }
 function changePage(){
     document.querySelectorAll(".p"+String(page)).forEach(a=>{a.style.display="none"});
@@ -40,8 +47,59 @@ function changePage(){
     document.querySelectorAll(".p"+String(page)).forEach(a=>{a.style.display="block"});
     document.querySelector(".submit").textContent=page;
 }
+function changeMode(){
+    if (mode=="input"){
+        if(solve()=="ERROR"){
+            document.querySelector(".answer").textContent="ERROR";
+            document.querySelector(".answer").style.color="#f00";
+            document.querySelector(".status-light").style.backgroundColor="#b00";
+        }
+        else{
+            document.querySelector(".answer").textContent=solve();
+            document.querySelector(".answer").style.color="#fff";
+            document.querySelector(".status-light").style.backgroundColor="#0b0";
+        }
+        if(color=="k"){
+            for(let i=0;i<2;i++){
+                document.querySelectorAll(".arrow-text")[i].textContent=document.querySelectorAll(".arrow-input")[i].value;
+            }
+        }
+        else{
+            document.querySelectorAll(".arrow-text")[0].textContent="<";
+            document.querySelectorAll(".arrow-text")[1].textContent=">";
+        }
+        document.querySelectorAll(".screen input").forEach(a=>{a.style.display="none";a.value=""});
+        document.querySelectorAll(".arrow-text").forEach(a=>{a.style.display="flex"});
+        document.querySelector(".answer").style.display="flex";
+        document.querySelector(".submit").textContent="";
+        document.querySelector(".arrows").removeEventListener("click",changePage);
+        
+        mode="output";
+    }
+    else{
+        page=1;
+        document.querySelectorAll(".screen input.p1").forEach(a=>{a.style.display="flex"});
+        document.querySelectorAll(".arrow-text")[0].textContent="<";
+        document.querySelectorAll(".arrow-text")[1].textContent=">";
+        if(color=="k"){
+            document.querySelectorAll(".arrow-text").forEach(a=>{a.style.display="none"});
+            document.querySelectorAll(".arrow-input").forEach(a=>{a.style.display="flex"});
+        }
+        else{
+            document.querySelectorAll(".arrow-input").forEach(a=>{a.style.display="none"});
+            document.querySelectorAll(".arrow-text").forEach(a=>{a.style.display="flex"});
+        }
+        document.querySelector(".answer").style.display="none";
+        document.querySelector(".submit").textContent="1";
+        document.querySelector(".arrows").addEventListener("click",changePage);
+        document.querySelector(".status-light").style.backgroundColor="#223";
+        mode="input";
+    }
+}
 
-document.querySelector(".submit").addEventListener("click",solve);
+document.querySelector(".submit").addEventListener("click",changeMode);
+document.querySelector(".arrows").addEventListener("click",changePage);
+document.querySelectorAll("input").forEach(a=>{a.addEventListener("input",()=>{a.value=a.value.toUpperCase();})});
 document.querySelector(".palette").addEventListener("click",function(event){
     for(let i=0;i<10;i++){
         if(event.target.classList.contains("c"+colors[i])){
@@ -57,7 +115,7 @@ document.querySelector(".palette").addEventListener("click",function(event){
                 document.querySelectorAll(".arrow-input").forEach(a=>{a.style.display="none"});
                 document.querySelectorAll(".arrow-text").forEach(a=>{a.style.display="flex"});
             }
-            document.querySelectorAll(".edgework *").forEach(a=>{a.remove()});
+            document.querySelectorAll(".edgework input").forEach(a=>{a.remove()});
             for(let j=0;j<edgeworks[colors.indexOf(color)].length;j++){
                 let newEw=document.createElement("input");
                 newEw.id="ew"+String(j+1);
@@ -68,5 +126,4 @@ document.querySelector(".palette").addEventListener("click",function(event){
         }
     }
 });
-document.querySelector(".arrows").addEventListener("click",changePage);
-document.querySelectorAll("input").forEach(a=>{a.addEventListener("input",()=>{a.value=a.value.toUpperCase();})});
+document.querySelectorAll(".arrow-input").forEach(a=>{a.addEventListener("input",()=>{if(a.value.length>1){a.value=a.value.slice(1);}})});
