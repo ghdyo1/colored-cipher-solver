@@ -9,10 +9,10 @@ body{
     display: flex;
     justify-content: space-around;
     align-items: center;
-    height: 10vh;
+    height: 8vw;
     width: 100%;
     font-family: 'Color Font';
-    font-size: 4.5vh;
+    font-size: 4vw;
 }
 .palette *{
     height: 100%;
@@ -27,78 +27,88 @@ body{
 }
 .red{
     color: #f00;
-    border: #222 solid 1vh;
+    background-color: #222;
 }
 .red:hover{
-    border: #f00 solid 1vh;
+    color: #222;
+    background-color: #f00;
 }
 .orange{
     color: #f70;
-    border: #222 solid 1vh;
+    background-color: #222;
 }
 .orange:hover{
-    border: #f70 solid 1vh;
+    color: #222;
+    background-color: #f70;
 }
 .yellow{
     color: #ff0;
-    border: #222 solid 1vh;
+    background-color: #222;
 }
 .yellow:hover{
-    border: #ff0 solid 1vh;
+    color: #222;
+    background-color: #ff0;
 }
 .green{
     color: #0f0;
-    border: #222 solid 1vh;
+    background-color: #222;
 }
 .green:hover{
-    border: #0f0 solid 1vh;
+    color: #222;
+    background-color: #0f0;
 }
 .blue{
     color: #00f;
-    border: #222 solid 1vh;
+    background-color: #222;
 }
 .blue:hover{
-    border: #00f solid 1vh;
+    color: #222;
+    background-color: #00f;
 }
 .indigo{
     color: #107;
-    border: #222 solid 1vh;
+    background-color: #222;
 }
 .indigo:hover{
-    border: #107 solid 1vh;
+    color: #222;
+    background-color: #107;
 }
 .violet{
     color: #a0f;
-    border: #222 solid 1vh;
+    background-color: #222;
 }
 .violet:hover{
-    border: #a0f solid 1vh;
+    color: #222;
+    background-color: #a0f;
 }
 .white{
     color: #fff;
-    border: #222 solid 1vh;
+    background-color: #222;
 }
 .white:hover{
-    border: #fff solid 1vh;
+    color: #222;
+    background-color: #fff;
 }
 .gray{
     color: #777;
-    border: #222 solid 1vh;
+    background-color: #222;
 }
 .gray:hover{
-    border: #777 solid 1vh;
+    color: #222;
+    background-color: #777;
 }
 .black{
     color: #000;
-    border: #222 solid 1vh;
+    background-color: #222;
 }
 .black:hover{
-    border: #000 solid 1vh;
+    color: #222;
+    background-color: #000;
 }
 .module-container{
     display: flex;
     width: 100%;
-    justify-content: center;
+    justify-content: space-between;
     margin-top: 5vw;
 }
 .module{
@@ -132,6 +142,9 @@ input{
     height: 100%;
     text-align: center;
 }
+input:hover{
+    cursor: pointer;
+}
 .right-part{
     width: 40%;
     height: 100%;
@@ -149,7 +162,7 @@ input{
     border-radius: 50%;
     width: 30%;
     aspect-ratio: 1/1;
-    margin-right: 15%;
+    margin-right: 5%;
 }
 .arrows{
     height: 30%;
@@ -204,5 +217,21 @@ input{
     font-size: 3.1vw;
     text-align: center;
     line-height: 1.1;
-    color: #111
+    color: #111;
+}
+.edgework, .tips{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    width: 35%;
+}
+.edgework input{
+    background-color: #111;
+    width: 30vw;
+    height: 8vw;
+    color: #fff;
+    margin: 2vw,0;
+    font-family: 'Module Font';
+    font-size: 2vw;
 }
