@@ -47,7 +47,7 @@ export function orange(edgework, inputs){
     else{
         matrix1=matrix1_abc+key1;
     }
-    let string=string1+string2;
+    const string=string1+string2;
     let keyword="";
     let letter1;
     let letter2;
@@ -139,7 +139,6 @@ export function orange(edgework, inputs){
     let r2;
     let c1;
     let c2;
-    console.log(encrypted);
     for(let i=0;i<3;i++){
         l1=matrix2.indexOf(encrypted[i*2]);
         l2=matrix3.indexOf(encrypted[i*2+1]);
@@ -148,13 +147,6 @@ export function orange(edgework, inputs){
         c1=l2%5;
         c2=l1%5;
         encrypted+=matrix1[r1*5+c1]+matrix4[r2*5+c2];
-        console.log(String(i)+"-----");
-        console.log(l1);
-        console.log(l2);
-        console.log(r1);
-        console.log(r2);
-        console.log(c1);
-        console.log(c2);
     }
     encrypted=encrypted.slice(6);
     for(let i=0;i<6;i++){

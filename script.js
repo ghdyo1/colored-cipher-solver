@@ -45,6 +45,7 @@ let mode="input";
 
 import {red} from "/solvers/red.js";
 import {orange} from "/solvers/orange.js";
+import {yellow} from "/solvers/yellow.js";
 
 function solve(){
     let inputs=[];
@@ -65,6 +66,8 @@ function solve(){
             return red(edgework,inputs);
         case "o":
             return orange(edgework,inputs);
+        case "y":
+            return yellow(edgework,inputs);
     }
 }
 function changePage(){
