@@ -64,7 +64,7 @@ export function red(edgework, inputs){
             encrypted+=matrix1[mod((letter1%5-1),5)+row1*5]+matrix1[mod((letter2%5-1),5)+row2*5];
         }
         else if(col1==col2){
-            encrypted+=matrix1[(letter1-5)%25]+matrix1[(letter2-5)%25];
+            encrypted+=matrix1[mod(letter1-5,25)]+matrix1[mod(letter2-5,25)];
         }
         else{
             encrypted+=matrix1[row1*5+col2]+matrix1[row2*5+col1]
@@ -136,6 +136,7 @@ export function red(edgework, inputs){
         encrypted+=matrix1[row1*5+col1]+matrix2[row2*5+col2];
     }
     encrypted=encrypted.slice(6);
+    console.log(encrypted+"-----");
     for(let i=0;i<6;i++){
         if(endreplace.includes(i)){
             encrypted+="j";
@@ -143,6 +144,7 @@ export function red(edgework, inputs){
         else{
             encrypted+=encrypted[i];
         }
+        console.log(encrypted);
     }
     encrypted=encrypted.slice(6);
     if(encrypted.length!=6){
