@@ -20,7 +20,7 @@ const lengths=[
     [6,5,5,5,8,11],
     [6,6,6,3,8,0],
     [6,6,6,8,0,0],
-    [6,8,8,6,6,12],
+    [6,10,8,6,6,12],
     [6,6,2,8,0,0],
     [6,8,0,8,8,0],
     [6,6,6,3,0,0],
@@ -29,9 +29,9 @@ const lengths=[
 const allowed=[
     [letters,letters,"",letters,letters,letters],
     [letters,letters,letters,letters,letters,digits],
-    [letters,digits,digits,digits,letters,digits+"-"],
-    [letters,digits,digits,letters,letters,""],
-    [letters,digits,digits,letters,"",""],
+    [letters,digits.slice(1,9),digits.slice(1,9),digits.slice(1,9),letters,digits.slice(1)+"-"],
+    [letters,digits.slice(0,8),digits,letters,letters,""],
+    [letters,digits.slice(1,4),digits.slice(1),letters,"",""],
     [letters,letters,letters,"01","01",digits+" ?="],
     [letters,letters,digits.slice(1,7),letters,"",""],
     [letters,digits,"",letters,letters,""],
@@ -47,6 +47,8 @@ import {red} from "/solvers/red.js";
 import {orange} from "/solvers/orange.js";
 import {yellow} from "/solvers/yellow.js";
 import {green} from "/solvers/green.js";
+import {blue} from "/solvers/blue.js";
+import {indigo} from "/solvers/indigo.js";
 
 function solve(){
     let inputs=[];
@@ -71,6 +73,10 @@ function solve(){
             return yellow(edgework,inputs);
         case "g":
             return green(edgework,inputs);
+        case "b":
+            return blue(edgework,inputs);
+        case "i":
+            return indigo(edgework,inputs);
     }
 }
 function changePage(){
