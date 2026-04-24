@@ -15,6 +15,30 @@ const edgeworks=[
     ["SN FIRST CHARACTER"],
     ["SN FIRST LETTER","SN LAST LETTER","SN SECOND CHARACTER"]
 ];
+const lengths=[
+    [6,6,0,8,8,8],
+    [6,6,8,8,8,4],
+    [6,5,5,5,8,11],
+    [6,6,6,3,8,0],
+    [6,6,6,8,0,0],
+    [6,8,8,6,6,12],
+    [6,6,2,8,0,0],
+    [6,8,0,8,8,0],
+    [6,6,6,3,0,0],
+    [6,8,8,16,3,14]
+];
+const allowed=[
+    [letters,letters,"",letters,letters,letters],
+    [letters,letters,letters,letters,letters,digits],
+    [letters,digits,digits,digits,letters,digits+"-"],
+    [letters,digits,digits,letters,letters,""],
+    [letters,digits,digits,letters,"",""],
+    [letters,letters,letters,"01","01",digits+" ?="],
+    [letters,letters,digits.slice(1,7),letters,"",""],
+    [letters,digits,"",letters,letters,""],
+    [letters,"01",digits.slice(1,7),letters,"",""],
+    [letters,letters,letters,"abcvi-",letters,letters+"-"]
+];
 let page=1;
 let color="r";
 let answer;
@@ -125,5 +149,18 @@ document.querySelector(".palette").addEventListener("click",function(event){
             }
         }
     }
+    if(page==2){changePage()}
 });
-document.querySelectorAll(".arrow-input").forEach(a=>{a.addEventListener("input",()=>{if(a.value.length>1){a.value=a.value.slice(1);}})});
+document.querySelectorAll(".arrow-input").forEach(a=>{a.addEventListener("input",()=>{
+    if(a.value.length>1){a.value=a.value.slice(1)}
+})});
+document.querySelectorAll(".screens .screen input").forEach(a=>{a.addEventListener("input",()=>{
+    let b=0;
+    for(let i=0;i<a.value.length;i++){
+        if(!allowed[colors.indexOf(color)][["t1","m1","b1","t2","m2","b2"].indexOf(a.id)].toUpperCase().includes(a.value[i])){
+            a.value=a.value.slice(0,i)+"#"+a.value.slice(i+1);
+        }
+    }
+    a.value=a.value.replaceAll("#","");
+    if(a.value.length>lengths[colors.indexOf(color)][["t1","m1","b1","t2","m2","b2"].indexOf(a.id)]){a.value=a.value.slice(1)}
+})});
