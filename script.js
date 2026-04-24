@@ -95,7 +95,6 @@ function changeMode(){
             document.querySelectorAll(".arrow-text")[1].textContent=">";
         }
         document.querySelectorAll(".screen input").forEach(a=>{a.style.display="none";a.value=""});
-        document.querySelectorAll(".edgework input").forEach(a=>{a.value=""});
         document.querySelectorAll(".arrow-text").forEach(a=>{a.style.display="flex"});
         document.querySelector(".answer").style.display="flex";
         document.querySelector(".submit").textContent="";
