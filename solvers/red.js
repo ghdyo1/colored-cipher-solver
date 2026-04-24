@@ -1,5 +1,5 @@
 export function red(edgework, inputs){
-    function mod(a, b){return ((a % b) + b) % b;}
+    function mod(a, b){return ((a%b)+b)%b;}
 
     const matrix_abc="abcdefghiklmnopqrstuvwxyz";
     let firstdigit=Number(edgework[0]);

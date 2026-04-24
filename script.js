@@ -1,5 +1,4 @@
 const letters="abcdefghijklmnopqrstuvwxyz";
-const matrix_abc="abcdefghiklmnopqrstuvwxyz";
 const digits="0123456789";
 const colors="roygbivwak";
 const hex=["f00","f70","ff0","0f0","00f","107","a0f","fff","777","000"];
@@ -45,6 +44,7 @@ let answer;
 let mode="input";
 
 import {red} from "/solvers/red.js";
+import {orange} from "/solvers/orange.js";
 
 function solve(){
     let inputs=[];
@@ -63,6 +63,8 @@ function solve(){
     switch(color){
         case "r":
             return red(edgework,inputs);
+        case "o":
+            return orange(edgework,inputs);
     }
 }
 function changePage(){
@@ -93,11 +95,11 @@ function changeMode(){
             document.querySelectorAll(".arrow-text")[1].textContent=">";
         }
         document.querySelectorAll(".screen input").forEach(a=>{a.style.display="none";a.value=""});
+        document.querySelectorAll(".edgework input").forEach(a=>{a.value=""});
         document.querySelectorAll(".arrow-text").forEach(a=>{a.style.display="flex"});
         document.querySelector(".answer").style.display="flex";
         document.querySelector(".submit").textContent="";
         document.querySelector(".arrows").removeEventListener("click",changePage);
-        
         mode="output";
     }
     else{
