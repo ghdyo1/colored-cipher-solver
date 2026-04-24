@@ -46,6 +46,7 @@ let mode="input";
 import {red} from "/solvers/red.js";
 import {orange} from "/solvers/orange.js";
 import {yellow} from "/solvers/yellow.js";
+import {green} from "/solvers/green.js";
 
 function solve(){
     let inputs=[];
@@ -68,6 +69,8 @@ function solve(){
             return orange(edgework,inputs);
         case "y":
             return yellow(edgework,inputs);
+        case "g":
+            return green(edgework,inputs);
     }
 }
 function changePage(){
@@ -156,7 +159,7 @@ document.querySelector(".palette").addEventListener("click",function(event){
     if(page==2){changePage()}
 });
 document.querySelectorAll(".arrow-input").forEach(a=>{a.addEventListener("input",()=>{
-    if(a.value.length>1){a.value=a.value.slice(1)}
+    if(a.value.length>1){a.value=a.value.slice(0,1)}
 })});
 document.querySelectorAll(".screens .screen input").forEach(a=>{a.addEventListener("input",()=>{
     let b=0;
@@ -166,5 +169,5 @@ document.querySelectorAll(".screens .screen input").forEach(a=>{a.addEventListen
         }
     }
     a.value=a.value.replaceAll("#","");
-    if(a.value.length>lengths[colors.indexOf(color)][["t1","m1","b1","t2","m2","b2"].indexOf(a.id)]){a.value=a.value.slice(1)}
+    if(a.value.length>lengths[colors.indexOf(color)][["t1","m1","b1","t2","m2","b2"].indexOf(a.id)]){a.value=a.value.slice(0,lengths[colors.indexOf(color)][["t1","m1","b1","t2","m2","b2"].indexOf(a.id)])}
 })});

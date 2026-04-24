@@ -14,3 +14,21 @@ export function /*color*/a(edgework, inputs){
         return encrypted.toUpperCase();
     }
 }
+
+    // let placeholderkey="";
+    // for(let i=0;i<placeholderword.length;i++){
+    //     if(!placeholderkey.includes(placeholderword[i])){
+    //         placeholderkey+=placeholderword[i];
+    //     }
+    // }
+    // let placeholder_abc=letters;
+    // for(let i=0;i<placeholderkey.length;i++){
+    //     placeholder_abc=placeholder.replace(placeholderkey[i],"");
+    // }
+    // let placeholder;
+    // if(/**/%2==/**/){
+    //     placeholder=placeholderkey+placeholder_abc;
+    // }
+    // else{
+    //     placeholder=placeholder_abc+placeholderkey;
+    // }
