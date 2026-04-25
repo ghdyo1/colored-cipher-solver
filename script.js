@@ -33,7 +33,7 @@ const allowed=[
     [letters,digits.slice(0,8),digits,letters,letters,""],
     [letters,digits.slice(1,4),digits.slice(1),letters,"",""],
     [letters,letters,letters,"01","01",digits+" ?="],
-    [letters,letters,digits.slice(1,7),letters,"",""],
+    [letters,letters,digits,letters,"",""],
     [letters,digits,"",letters,letters,""],
     [letters,"01",digits.slice(1,7),letters,"",""],
     [letters,letters,letters,"abcvi-",letters,letters+"-"]
@@ -49,6 +49,7 @@ import {yellow} from "/solvers/yellow.js";
 import {green} from "/solvers/green.js";
 import {blue} from "/solvers/blue.js";
 import {indigo} from "/solvers/indigo.js";
+import {violet} from "/solvers/violet.js";
 
 function solve(){
     let inputs=[];
@@ -77,6 +78,8 @@ function solve(){
             return blue(edgework,inputs);
         case "i":
             return indigo(edgework,inputs);
+        case "v":
+            return violet(edgework,inputs);
     }
 }
 function changePage(){
