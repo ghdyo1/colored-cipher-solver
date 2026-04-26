@@ -1318,7 +1318,7 @@ function solve(){
                 return black(edgework,inputs);
         }
     }
-    catch(e){
+    catch(error){
         return "ERROR";
     }
 }
