@@ -1,12 +1,10 @@
 export function violet(edgework, inputs){
-    //ONLY if needed
-    //function mod(a, b){return ((a%b)+b)%b;}
-
-    const letters="abcdefghijklmnopqrstuvwxyz";;
+    const letters="abcdefghijklmnopqrstuvwxyz";
     let encrypted=inputs[0];
     let key=inputs[1];
     let number=inputs[2];
     let quagmireword=inputs[3];
+    
     for(let i=0;i<6;i++){
         if(letters.slice(0,13).includes(encrypted[i])){
             encrypted+=(letters.slice(13+Math.floor(letters.indexOf(key[i])/2))+letters.slice(13,13+Math.floor(letters.indexOf(key[i])/2)))[letters.indexOf(encrypted[i])];
