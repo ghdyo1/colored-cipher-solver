@@ -36,7 +36,7 @@ const lengths=[
 const allowed=[
     [letters,letters,"",letters,letters,letters,digits,digits,digits],
     [letters,letters,letters,letters,letters,digits,digits,digits,digits],
-    [letters,digits.slice(1,9),digits.slice(1,9),digits.slice(1,9),letters,digits.slice(1)+"-",digits],
+    [letters,digits.slice(1,9),digits.slice(1,9),digits.slice(1,9),letters,digits+"-",digits],
     [letters,digits.slice(0,8),digits,letters,letters,"",digits],
     [letters,digits.slice(1,4),digits.slice(1),letters,"","",digits],
     [letters,letters,letters,"01","01",digits+" ?=",digits,digits],
