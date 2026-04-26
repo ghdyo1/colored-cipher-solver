@@ -1294,27 +1294,32 @@ function solve(){
         }
     }
     document.querySelectorAll(".edgework input").forEach(a=>{edgework.push(a.value.toLowerCase())});
-    switch(color){
-        case "r":
-            return red(edgework,inputs);
-        case "o":
-            return orange(edgework,inputs);
-        case "y":
-            return yellow(edgework,inputs);
-        case "g":
-            return green(edgework,inputs);
-        case "b":
-            return blue(edgework,inputs);
-        case "i":
-            return indigo(edgework,inputs);
-        case "v":
-            return violet(edgework,inputs);
-        case "w":
-            return white(edgework,inputs);
-        case "a":
-            return gray(edgework,inputs);
-        case "k":
-            return black(edgework,inputs);
+    try{
+        switch(color){
+            case "r":
+                return red(edgework,inputs);
+            case "o":
+                return orange(edgework,inputs);
+            case "y":
+                return yellow(edgework,inputs);
+            case "g":
+                return green(edgework,inputs);
+            case "b":
+                return blue(edgework,inputs);
+            case "i":
+                return indigo(edgework,inputs);
+            case "v":
+                return violet(edgework,inputs);
+            case "w":
+                return white(edgework,inputs);
+            case "a":
+                return gray(edgework,inputs);
+            case "k":
+                return black(edgework,inputs);
+        }
+    }
+    catch(e){
+        return "ERROR";
     }
 }
 function changePage(){
