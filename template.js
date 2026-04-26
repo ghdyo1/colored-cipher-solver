@@ -1,4 +1,4 @@
-export function /*color*/a(edgework, inputs){
+function /*color*/a(edgework, inputs){
     //ONLY if needed
     //function mod(a,b){return ((a%b)+b)%b;}
 
