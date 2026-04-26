@@ -122,6 +122,7 @@ function changeMode(){
         document.querySelector(".answer").style.display="flex";
         document.querySelector(".submit").textContent="";
         document.querySelector(".arrows").removeEventListener("click",changePage);
+        document.querySelector(".keyboard").textContent="Press the page screen to start new solve";
         mode="output";
     }
     else{
@@ -141,6 +142,7 @@ function changeMode(){
         document.querySelector(".submit").textContent="1";
         document.querySelector(".arrows").addEventListener("click",changePage);
         document.querySelector(".status-light").style.backgroundColor="#223";
+        document.querySelector(".keyboard").textContent="Press the page screen to solve the module";
         mode="input";
     }
 }
@@ -151,6 +153,7 @@ function recreateEdgeworks(){
         newEw.id="ew"+String(j+1);
         newEw.autocomplete="off";
         newEw.placeholder=edgeworks[colors.indexOf(color)][j];
+        newEw.style.color="#777";
         document.querySelector(".edgework").appendChild(newEw);
     }
     document.querySelectorAll(".edgework input").forEach(a=>(a.addEventListener("input",()=>{
@@ -180,10 +183,12 @@ document.querySelector(".palette").addEventListener("click",function(event){
             if(colors[i]=="k"){
                 document.querySelectorAll(".arrow-text").forEach(a=>{a.style.display="none"});
                 document.querySelectorAll(".arrow-input").forEach(a=>{a.style.display="flex"});
+                document.querySelector(".keyboard").style.color="#fff";
             }
             else{
                 document.querySelectorAll(".arrow-input").forEach(a=>{a.style.display="none"});
                 document.querySelectorAll(".arrow-text").forEach(a=>{a.style.display="flex"});
+                document.querySelector(".keyboard").style.color="#000";
             }
         }
     }
