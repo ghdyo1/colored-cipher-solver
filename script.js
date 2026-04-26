@@ -51,18 +51,19 @@ import {indigo} from "/solvers/indigo.js";
 import {violet} from "/solvers/violet.js";
 import {white} from "/solvers/white.js";
 import {gray} from "/solvers/gray.js";
+import {black} from "/solvers/black.js";
 
 function solve(){
     let inputs=[];
     let edgework=[];
     for(let i=0;i<2;i++){
         for(let j=0;j<3;j++){
-            inputs.push(document.querySelector("#"+["t","m","b"][j]+String(i+1)).value.toLowerCase().trim());
+            inputs.push(document.querySelector("#"+["t","m","b"][j]+String(i+1)).value.toLowerCase());
         }
     }
     if(color=="k"){
         for(let i=0;i<2;i++){
-            inputs.push(document.querySelectorAll(".arrow-input")[i].value.toLowerCase().trim());
+            inputs.push(document.querySelectorAll(".arrow-input")[i].value.toLowerCase());
         }
     }
     document.querySelectorAll(".edgework input").forEach(a=>{edgework.push(a.value.toLowerCase())});
@@ -85,6 +86,8 @@ function solve(){
             return white(edgework,inputs);
         case "a":
             return gray(edgework,inputs);
+        case "k":
+            return black(edgework,inputs);
     }
 }
 function changePage(){
@@ -189,6 +192,7 @@ document.querySelector(".palette").addEventListener("click",function(event){
 });
 document.querySelectorAll(".arrow-input").forEach(a=>{a.addEventListener("input",()=>{
     if(a.value.length>1){a.value=a.value.slice(0,1)}
+    if(!letters.includes(a.value.toLowerCase())){a.value=""}
 })});
 document.querySelectorAll(".screens .screen input").forEach(a=>{a.addEventListener("input",()=>{
     let b=0;
