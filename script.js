@@ -50,6 +50,7 @@ import {blue} from "/solvers/blue.js";
 import {indigo} from "/solvers/indigo.js";
 import {violet} from "/solvers/violet.js";
 import {white} from "/solvers/white.js";
+import {gray} from "/solvers/gray.js";
 
 function solve(){
     let inputs=[];
@@ -64,7 +65,7 @@ function solve(){
             inputs.push(document.querySelectorAll(".arrow-input")[i].value.toLowerCase().trim());
         }
     }
-    document.querySelectorAll(".edgework input").forEach(a=>{edgework.push(a.value)});
+    document.querySelectorAll(".edgework input").forEach(a=>{edgework.push(a.value.toLowerCase())});
     switch(color){
         case "r":
             return red(edgework,inputs);
@@ -82,6 +83,8 @@ function solve(){
             return violet(edgework,inputs);
         case "w":
             return white(edgework,inputs);
+        case "a":
+            return gray(edgework,inputs);
     }
 }
 function changePage(){

@@ -1,5 +1,5 @@
 export function indigo(edgework, inputs){
-    function mod(a, b){return ((a%b)+b)%b;}
+    function mod(a,b){return ((a%b)+b)%b;}
 
     const letters="abcdefghijklmnopqrstuvwxyz";
     const digits="0123456789";

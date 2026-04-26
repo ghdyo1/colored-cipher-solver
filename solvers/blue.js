@@ -1,5 +1,5 @@
 export function blue(edgework, inputs){
-    function mod(a, b){return ((a%b)+b)%b;}
+    function mod(a,b){return ((a%b)+b)%b;}
 
     const letters="abcdefghijklmnopqrstuvwxyz";
     let indicators=Number(edgework[0]);

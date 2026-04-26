@@ -1,5 +1,5 @@
 export function green(edgework, inputs){
-    function mod(a, b){return ((a%b)+b)%b;}
+    function mod(a,b){return ((a%b)+b)%b;}
 
     const letters="abcdefghijklmnopqrstuvwxyz";
     let unlit=Number(edgework[0]);

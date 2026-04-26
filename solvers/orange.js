@@ -1,5 +1,5 @@
 export function orange(edgework, inputs){
-    function mod(a, b){return ((a%b)+b)%b;}
+    function mod(a,b){return ((a%b)+b)%b;}
 
     const matrix_abc="abcdefghiklmnopqrstuvwxyz";
     const digits="0123456789";

@@ -1,7 +1,4 @@
 export function white(edgework, inputs){
-    //ONLY if needed
-    //function mod(a, b){return ((a%b)+b)%b;}
-
     const letters="abcdefghijklmnopqrstuvwxyz";
     let ports=Number(edgework[0]);
     let lit=Number(edgework[1]);

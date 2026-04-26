@@ -1,5 +1,5 @@
 export function yellow(edgework, inputs){
-    function mod(a, b){return ((a%b)+b)%b;}
+    function mod(a,b){return ((a%b)+b)%b;}
 
     const letters="abcdefghijklmnopqrstuvwxyz";
     const morselist=[".-","-...","-.-.","-..",".","..-.","--.","....","..",".---","-.-",".-..","--","-.","---",".--.","--.-",".-.","...","-","..-","...-",".--","-..-","-.--","--.."];
