@@ -243,3 +243,6 @@ input:hover{
     justify-content: center;
     align-items: center;
 }
+input::placeholder{
+    color: #777;
+}

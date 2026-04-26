@@ -1385,7 +1385,6 @@ function recreateEdgeworks(){
         newEw.id="ew"+String(j+1);
         newEw.autocomplete="off";
         newEw.placeholder=edgeworks[colors.indexOf(color)][j];
-        newEw.style.color="#777";
         document.querySelector(".edgework").appendChild(newEw);
     }
     document.querySelectorAll(".edgework input").forEach(a=>(a.addEventListener("input",()=>{
