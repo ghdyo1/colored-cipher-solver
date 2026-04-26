@@ -1330,32 +1330,43 @@ function changePage(){
 }
 function changeMode(){
     if (mode=="input"){
-        if(solve()=="ERROR"){
-            document.querySelector(".answer").textContent="ERROR";
-            document.querySelector(".answer").style.color="#f00";
-            document.querySelector(".status-light").style.backgroundColor="#b00";
-        }
-        else{
-            document.querySelector(".answer").textContent=solve();
-            document.querySelector(".answer").style.color="#fff";
-            document.querySelector(".status-light").style.backgroundColor="#0b0";
-        }
+        let ewi=0;
+        document.querySelectorAll(".edgework input").forEach(a=>{if(a.value==""){ewi+=1}});
+        document.querySelectorAll(".screens .screen input").forEach(a=>{if(a.value.length>0||lengths[colors.indexOf(color)][["t1","m1","b1","t2","m2","b2"].indexOf(a.id)]==0){ewi+=0}else{ewi+=1}});
         if(color=="k"){
-            for(let i=0;i<2;i++){
-                document.querySelectorAll(".arrow-text")[i].textContent=document.querySelectorAll(".arrow-input")[i].value;
-            }
+            document.querySelectorAll(".arrow-input").forEach(a=>{if(a.value.length==0){ewi+=1}})
+        }
+        if(ewi>0){
+            document.querySelector(".keyboard").textContent="Please input everything!";
         }
         else{
-            document.querySelectorAll(".arrow-text")[0].textContent="<";
-            document.querySelectorAll(".arrow-text")[1].textContent=">";
+            if(solve()=="ERROR"){
+                document.querySelector(".answer").textContent="ERROR";
+                document.querySelector(".answer").style.color="#f00";
+                document.querySelector(".status-light").style.backgroundColor="#b00";
+            }
+            else{
+                document.querySelector(".answer").textContent=solve();
+                document.querySelector(".answer").style.color="#fff";
+                document.querySelector(".status-light").style.backgroundColor="#0b0";
+            }
+            if(color=="k"){
+                for(let i=0;i<2;i++){
+                    document.querySelectorAll(".arrow-text")[i].textContent=document.querySelectorAll(".arrow-input")[i].value;
+                }
+            }
+            else{
+                document.querySelectorAll(".arrow-text")[0].textContent="<";
+                document.querySelectorAll(".arrow-text")[1].textContent=">";
+            }
+            document.querySelectorAll(".screen input").forEach(a=>{a.style.display="none"});
+            document.querySelectorAll(".arrow-text").forEach(a=>{a.style.display="flex"});
+            document.querySelector(".answer").style.display="flex";
+            document.querySelector(".submit").textContent="";
+            document.querySelector(".arrows").removeEventListener("click",changePage);
+            document.querySelector(".keyboard").textContent="Press the page screen to start a new solve";
+            mode="output";
         }
-        document.querySelectorAll(".screen input").forEach(a=>{a.style.display="none";a.value=""});
-        document.querySelectorAll(".arrow-text").forEach(a=>{a.style.display="flex"});
-        document.querySelector(".answer").style.display="flex";
-        document.querySelector(".submit").textContent="";
-        document.querySelector(".arrows").removeEventListener("click",changePage);
-        document.querySelector(".keyboard").textContent="Press the page screen to start new solve";
-        mode="output";
     }
     else{
         page=1;
