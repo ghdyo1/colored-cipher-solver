@@ -1,11 +1,13 @@
+// Fully rework changePage() (by recreating inputs every color change)
 const letters="abcdefghijklmnopqrstuvwxyz";
 const matrix_abc="abcdefghiklmnopqrstuvwxyz";
 const digit_words=["zero","one","two","three","four","five","six","seven","eight","nine"];
 const morselist=[".-","-...","-.-.","-..",".","..-.","--.","....","..",".---","-.-",".-..","--","-.","---",".--.","--.-",".-.","...","-","..-","...-",".--","-..-","-.--","--.."];
 const roman=["i","ii","iii","iv","v","vi","vii","viii"];
 const digits="0123456789";
-const colors="roygbivwak";
-const hex=["f00","f70","ff0","0f0","00f","107","a0f","fff","777","000"];
+const colors="roygbivwaknqlfsmce";
+const hex=["f00","f70","ff0","0f0","00f","217","a0f","fff","777","111","421","835","68f","282","900","f0f","f85","fe9"];
+const colorwords=[["Red","Orange","Yellow","Green","Blue","Indigo","Violet","White","Gray","Black"],["Brown","Maroon","Cornflower","Forest","Crimson","Magenta","Coral","Cream"]];
 let page=1;
 let color="r";
 let mode="input";
@@ -45,6 +47,7 @@ const allowed=[
     [letters,"01",digits.slice(1,7),letters,"","",digits+letters],
     [letters,letters,letters,"abcvi-",letters,letters+"-",letters,letters,digits+letters]
 ];
+const pages=[2,2,2,2,2,2,2,2,2,2,2,3,2,2,3,1,2,4];
 
 function mod(a,b){return ((a%b)+b)%b;}
 function step(a,b){
@@ -58,6 +61,26 @@ function rotor(rot,row,lett,con){
     lett=con[rot][row][lett].toLowerCase();
     lett=con[rot][(row+1)%2].toLowerCase().indexOf(lett);
     return lett;
+}
+function composekey(placeholderword,edgeworkEL,parity){
+    let placeholderkey="";
+    for(let i=0;i<placeholderword.length;i++){
+        if(!placeholderkey.includes(placeholderword[i])){
+            placeholderkey+=placeholderword[i];
+        }
+    }
+    let placeholder_abc=letters;
+    for(let i=0;i<placeholderkey.length;i++){
+        placeholder_abc=placeholder_abc.replace(placeholderkey[i],"");
+    }
+    let placeholder;
+    if(edgeworkEL%2==parity){
+        placeholder=placeholderkey+placeholder_abc;
+    }
+    else{
+        placeholder=placeholder_abc+placeholderkey;
+    }
+    return placeholder;
 }
 function red(edgework, inputs){
     let firstdigit=Number(edgework[0]);
@@ -194,7 +217,6 @@ function red(edgework, inputs){
         encrypted+=matrix1[row1*5+col1]+matrix2[row2*5+col2];
     }
     encrypted=encrypted.slice(6);
-    console.log(encrypted+"-----");
     for(let i=0;i<6;i++){
         if(endreplace.includes(i)){
             encrypted+="j";
@@ -202,7 +224,6 @@ function red(edgework, inputs){
         else{
             encrypted+=encrypted[i];
         }
-        console.log(encrypted);
     }
     encrypted=encrypted.slice(6);
     if(encrypted.length!=6){
@@ -419,23 +440,7 @@ function yellow(edgework, inputs){
     for(let i=0;i<26;i++){
         morse=morse.replaceAll("_"+morselist[i]+"_",letters[i]);
     }
-    let keyword="";
-    let digitrow_abc=letters;
-    for(let i=0;i<morse.length;i++){
-        if(!keyword.includes(morse[i])){
-            keyword+=morse[i];
-        }
-    }
-    for(let i=0;i<morse.length;i++){
-        digitrow_abc=digitrow_abc.replace(morse[i],"");
-    }
-    let digitrow;
-    if(batteries%2==1){
-        digitrow=keyword+digitrow_abc;
-    }
-    else{
-        digitrow=digitrow_abc+keyword;
-    }
+    let digitrow=composekey(morse,batteries,1);
     digitrow+="111111111222222222333333331112223331112223331112223312312312312312312312312312";
     let remaining=digitrow.slice(0,26);
     let lettertris="";
@@ -529,23 +534,7 @@ function green(edgework, inputs){
         }
         currentdigits="";
     }
-    let ragbabykey="";
-    for(let i=0;i<ragbabyword.length;i++){
-        if(!ragbabykey.includes(ragbabyword[i])){
-            ragbabykey+=ragbabyword[i];
-        }
-    }
-    let ragbaby_abc=letters;
-    for(let i=0;i<ragbabykey.length;i++){
-        ragbaby_abc=ragbaby_abc.replace(ragbabykey[i],"");
-    }
-    let ragbaby;
-    if(unlit%2==0){
-        ragbaby=ragbabykey+ragbaby_abc;
-    }
-    else{
-        ragbaby=ragbaby_abc+ragbabykey;
-    }
+    let ragbaby=composekey(ragbabyword,unlit,0);
     for(let i=0;i<6;i++){
         encrypted+=ragbaby[mod(ragbaby.indexOf(encrypted[i])-(i+1),26)];
     }
@@ -569,23 +558,7 @@ function blue(edgework, inputs){
     let tridigitalcols=inputs[2];
     let tridigitalword=inputs[3];
 
-    let tridigitalkey="";
-    for(let i=0;i<tridigitalword.length;i++){
-        if(!tridigitalkey.includes(tridigitalword[i])){
-            tridigitalkey+=tridigitalword[i];
-        }
-    }
-    let tridigital_abc=letters;
-    for(let i=0;i<tridigitalkey.length;i++){
-        tridigital_abc=tridigital_abc.replace(tridigitalkey[i],"");
-    }
-    let tridigital;
-    if(indicators%2==0){
-        tridigital=tridigitalkey+tridigital_abc;
-    }
-    else{
-        tridigital=tridigital_abc+tridigitalkey;
-    }
+    let tridigital=composekey(tridigitalword,indicators,0);
     let key="";
     for(let i=0;i<6;i++){
         key+=tridigital[(Number(tridigitalrows[i])*9)-9+Number(tridigitalcols[i])-1];
@@ -615,23 +588,7 @@ function indigo(edgework, inputs){
     let bottombinary=inputs[4];
     let logicgateencr=inputs[5];
 
-    let morsekey="";
-    for(let i=0;i<morseword.length;i++){
-        if(!morsekey.includes(morseword[i])){
-            morsekey+=morseword[i];
-        }
-    }
-    let morse_abc=letters;
-    for(let i=0;i<morsekey.length;i++){
-        morse_abc=morse_abc.replace(morsekey[i],"");
-    }
-    let morse;
-    if(ports%2==1){
-        morse=morsekey+morse_abc;
-    }
-    else{
-        morse=morse_abc+morsekey;
-    }
+    let morse=composekey(morseword,ports,1);
     let letterkey=morse;
     morse+=".........---------________...---___...---___...---__.-_.-_.-_.-_.-_.-_.-_.-_.-";
     let morselogickey="";
@@ -885,17 +842,7 @@ function violet(edgework, inputs){
         encrypted+=encrypted[Number(grid[i])];
     }
     encrypted=encrypted.slice(6);
-    let quagmirekey="";
-    for(let i=0;i<quagmireword.length;i++){
-        if(!quagmirekey.includes(quagmireword[i])){
-            quagmirekey+=quagmireword[i];
-        }
-    }
-    let quagmire_abc=letters;
-    for(let i=0;i<quagmirekey.length;i++){
-        quagmire_abc=quagmire_abc.replace(quagmirekey[i],"");
-    }
-    let quagmire=quagmirekey+quagmire_abc;
+    let quagmire=composekey(quagmireword,0,0);
     for(let i=0;i<6;i++){
         encrypted+=letters[(quagmire.slice(quagmire.indexOf(key[i]))+quagmire.slice(0,quagmire.indexOf(key[i]))).indexOf(encrypted[i])];
     }
@@ -934,23 +881,7 @@ function white(edgework, inputs){
         }
     }
     key=key.slice(16);
-    let seankey="";
-    for(let i=0;i<key.length;i++){
-        if(!seankey.includes(key[i])){
-            seankey+=key[i];
-        }
-    }
-    let sean_abc=letters;
-    for(let i=0;i<seankey.length;i++){
-        sean_abc=sean_abc.replace(seankey[i],"");
-    }
-    let sean;
-    if(lit%2==0){
-        sean=seankey+sean_abc;
-    }
-    else{
-        sean=sean_abc+seankey;
-    }
+    let sean=composekey(key,lit,0);
     let seanshifter=[];
     for(let i=0;i<26;i++){
         seanshifter.push(sean[i]);
@@ -1108,42 +1039,10 @@ function black(edgework, inputs){
     let buttonl=inputs[6];
     let buttonr=inputs[7];
 
-    let key1key="";
-    for(let i=0;i<keyword1.length;i++){
-        if(!key1key.includes(keyword1[i])){
-            key1key+=keyword1[i];
-        }
-    }
-    let key1_abc=letters;
-    for(let i=0;i<key1key.length;i++){
-        key1_abc=key1_abc.replace(key1key[i],"");
-    }
-    let key1;
-    if(letters.indexOf(firstletter)%2==0){
-        key1=key1key+key1_abc;
-    }
-    else{
-        key1=key1_abc+key1key;
-    }
+    let key1=composekey(keyword1,letters.indexOf(firstletter),0);
     key1=key1.replace(buttonl,"#");
     key1+=buttonl;
-    let key2key="";
-    for(let i=0;i<keyword2.length;i++){
-        if(!key2key.includes(keyword2[i])){
-            key2key+=keyword2[i];
-        }
-    }
-    let key2_abc=letters;
-    for(let i=0;i<key2key.length;i++){
-        key2_abc=key2_abc.replace(key2key[i],"");
-    }
-    let key2;
-    if(letters.indexOf(lastletter)%2==1){
-        key2=key2key+key2_abc;
-    }
-    else{
-        key2=key2_abc+key2key;
-    }
+    let key2=composekey(keyword2,letters.indexOf(lastletter),1);
     key2=key2.replace(buttonr,"#");
     key2+=buttonr;
     let numbers="";
@@ -1285,7 +1184,7 @@ function solve(){
     let edgework=[];
     for(let i=0;i<2;i++){
         for(let j=0;j<3;j++){
-            inputs.push(document.querySelector("#"+["t","m","b"][j]+String(i+1)).value.toLowerCase());
+            inputs.push(document.querySelector("#"+"tmb"[j]+(i+1)).value.toLowerCase());
         }
     }
     if(color=="k"){
@@ -1322,14 +1221,20 @@ function solve(){
         return "ERROR";
     }
 }
-function changePage(){
-    document.querySelectorAll(".p"+String(page)).forEach(a=>{a.style.display="none"});
-    page=page%2+1;
-    document.querySelectorAll(".p"+String(page)).forEach(a=>{a.style.display="block"});
-    document.querySelector(".submit").textContent=page;
+function changePage(newPage){
+    if(newPage=="next"){
+        newPage=(((page-1)+1)%pages[colors.indexOf(color)])+1;
+    }
+    if(newPage=="prev"){
+        newPage=(((page-1)-1+pages[colors.indexOf(color)])%pages[colors.indexOf(color)])+1;
+    }
+    document.querySelectorAll(".screens .screen input").forEach(a=>{a.style.display="none"});
+    document.querySelectorAll(".p"+newPage).forEach(a=>{a.style.display="flex"});
+    document.querySelector(".submit").textContent=newPage;
+    page=newPage;
 }
 function changeMode(){
-    if (mode=="input"){
+    if(mode=="input"){
         let ewi=0;
         document.querySelectorAll(".edgework input").forEach(a=>{if(a.value==""){ewi+=1}});
         document.querySelectorAll(".screens .screen input").forEach(a=>{if(a.value.length>0||lengths[colors.indexOf(color)][["t1","m1","b1","t2","m2","b2"].indexOf(a.id)]==0){ewi+=0}else{ewi+=1}});
@@ -1363,7 +1268,8 @@ function changeMode(){
             document.querySelectorAll(".arrow-text").forEach(a=>{a.style.display="flex"});
             document.querySelector(".answer").style.display="flex";
             document.querySelector(".submit").textContent="";
-            document.querySelector(".arrows").removeEventListener("click",changePage);
+            document.querySelectorAll(".arrow")[0].removeEventListener("click",()=>{changePage("prev")});
+            document.querySelectorAll(".arrow")[1].removeEventListener("click",()=>{changePage("next")});
             document.querySelector(".keyboard").textContent="Press the page screen to start a new solve";
             mode="output";
         }
@@ -1383,7 +1289,8 @@ function changeMode(){
         }
         document.querySelector(".answer").style.display="none";
         document.querySelector(".submit").textContent="1";
-        document.querySelector(".arrows").addEventListener("click",changePage);
+        document.querySelectorAll(".arrow")[0].addEventListener("click",()=>{changePage("prev")});
+        document.querySelectorAll(".arrow")[1].addEventListener("click",()=>{changePage("next")});
         document.querySelector(".status-light").style.backgroundColor="#223";
         document.querySelector(".keyboard").textContent="Press the page screen to solve the module";
         mode="input";
@@ -1411,35 +1318,87 @@ function recreateEdgeworks(){
         a.value=a.value.replaceAll("#","");
     })));
 }
-
-document.querySelector(".submit").addEventListener("click",changeMode);
-document.querySelector(".arrows").addEventListener("click",changePage);
-document.querySelectorAll("input").forEach(a=>{a.addEventListener("input",()=>{a.value=a.value.toUpperCase();})});
-document.querySelector(".palette").addEventListener("click",function(event){
-    for(let i=0;i<10;i++){
-        if(event.target.classList.contains("c"+colors[i])){
-            document.querySelector(".module").style.backgroundColor="#"+hex[i];
-            color=colors[i];
-            document.querySelectorAll("input").forEach(a=>{a.value=""});
-            document.querySelector(".submit").textContent=page;
-            if(colors[i]=="k"){
-                document.querySelectorAll(".arrow-text").forEach(a=>{a.style.display="none"});
-                document.querySelectorAll(".arrow-input").forEach(a=>{a.style.display="flex"});
-                document.querySelector(".keyboard").style.color="#fff";
-            }
-            else{
-                document.querySelectorAll(".arrow-input").forEach(a=>{a.style.display="none"});
-                document.querySelectorAll(".arrow-text").forEach(a=>{a.style.display="flex"});
-                document.querySelector(".keyboard").style.color="#000";
-            }
+function recreateInputs(){
+    document.querySelectorAll(".screens .screen input").forEach(a=>{a.remove()});
+    for(let i=0;i<pages[colors.indexOf(color)];i++){
+        for(let j=0;j<3;j++){
+            let newInput=document.createElement("input");
+            newInput.classList="tmb"[j]+" p"+(i+1);
+            newInput.id="tmb"[j]+(i+1);
+            newInput.autocomplete="off";
+            document.querySelectorAll(".screens .screen")[j].appendChild(newInput);
         }
     }
-    recreateEdgeworks();
-    if(page==2){changePage()}
-});
+    changePage(1);
+}
+
+recreateEdgeworks();
+recreateInputs();
+for(let i=0;i<colorwords.length;i++){
+    let newRow=document.createElement("div");
+    newRow.style.height="6vw";
+    newRow.style.width="100%";
+    newRow.style.display="flex";
+    newRow.style.justifyContent="stretch";
+    for(let j=0;j<colorwords[i].length;j++){
+        let index=0;
+        for(let k=0;k<i;k++){
+            index+=colorwords[k].length;
+        }
+        index+=j;
+        let newColor=document.createElement("div");
+        newColor.style.height="100%";
+        newColor.style.width="100%";
+        newColor.style.display="flex";
+        newColor.style.justifyContent="center";
+        newColor.style.alignItems="center";
+        newColor.style.borderRadius="1vw";
+        newColor.style.transitionDuration="0.3s";
+        newColor.style.color="#"+hex[index];
+        newColor.addEventListener("mouseover",()=>{
+            newColor.style.backgroundColor="#"+hex[index];
+            newColor.style.color="#222";
+        });
+        newColor.addEventListener("mouseout",()=>{
+            newColor.style.backgroundColor="#222";
+            newColor.style.color="#"+hex[index];
+        })
+        newColor.addEventListener("click",()=>{
+            if(color!=colors[index]){
+                if(mode=="output"){changeMode()}
+                color=colors[index];
+                document.querySelector(".module").style.backgroundColor="#"+hex[index];
+                document.querySelectorAll("input").forEach(a=>{a.value=""});
+                recreateInputs();
+                if(color=="k"){
+                    document.querySelectorAll(".arrow-text").forEach(a=>{a.style.display="none"});
+                    document.querySelectorAll(".arrow-input").forEach(a=>{a.style.display="flex"});
+                    document.querySelector(".keyboard").style.color="#fff";
+                }
+                else{
+                    document.querySelectorAll(".arrow-input").forEach(a=>{a.style.display="none"});
+                    document.querySelectorAll(".arrow-text").forEach(a=>{a.style.display="flex"});
+                    document.querySelector(".keyboard").style.color="#000";
+                }
+            }
+            document.querySelector(".keyboard").textContent="Press the page screen to solve the module";
+            recreateEdgeworks();
+            changePage(1);
+        })
+        newColor.classList="c"+colors[index];
+        newColor.textContent=colorwords[i][j];
+        newRow.appendChild(newColor);
+    }
+    document.querySelector(".palette").appendChild(newRow);
+}
+
+document.querySelector(".submit").addEventListener("click",changeMode);
+document.querySelectorAll(".arrow")[0].addEventListener("click",()=>{changePage("prev")});
+document.querySelectorAll(".arrow")[1].addEventListener("click",()=>{changePage("next")});
+document.querySelectorAll("input").forEach(a=>{a.addEventListener("input",()=>{a.value=a.value.toUpperCase();})});
 document.querySelectorAll(".arrow-input").forEach(a=>{a.addEventListener("input",()=>{
     if(a.value.length>1){a.value=a.value.slice(0,1)}
-    if(!letters.includes(a.value.toLowerCase())){a.value=""}
+    if(!(letters+"#").includes(a.value.toLowerCase())){a.value=""}
 })});
 document.querySelectorAll(".screens .screen input").forEach(a=>{a.addEventListener("input",()=>{
     let b=0;
@@ -1451,5 +1410,10 @@ document.querySelectorAll(".screens .screen input").forEach(a=>{a.addEventListen
     a.value=a.value.replaceAll("#","");
     if(a.value.length>lengths[colors.indexOf(color)][["t1","m1","b1","t2","m2","b2"].indexOf(a.id)]){a.value=a.value.slice(0,lengths[colors.indexOf(color)][["t1","m1","b1","t2","m2","b2"].indexOf(a.id)])}
 })});
-
-recreateEdgeworks();
+document.querySelectorAll("input").forEach(a=>{a.addEventListener("input",()=>{
+    let empty;
+    document.querySelectorAll(".edgework input").forEach(b=>{if(b.value==""){empty=1}});
+    document.querySelectorAll(".screens .screen input").forEach(b=>{if(b.value==""&&lengths[colors.indexOf(color)][["t1","m1","b1","t2","m2","b2"].indexOf(b.id)]!=0){empty=1}});
+    if(color=="k"){document.querySelectorAll(".arrow-input").forEach(b=>{if(b.value==""){empty=1}})}
+    if(empty!=1){document.querySelector(".keyboard").textContent="Press the page screen to solve the module"}
+})})

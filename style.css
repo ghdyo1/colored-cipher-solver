@@ -6,111 +6,21 @@ body{
     background-color: #222;
 }
 .palette{
-    color: #fff;
     display: flex;
-    justify-content: space-around;
-    align-items: center;
-    height: 8vw;
+    flex-direction: column;
+    height: 12vw;
     width: 100%;
     font-family: 'Color Font';
     font-size: 4vw;
 }
-.palette *{
-    height: 100%;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition-duration: 0.3s;
-}
-.palette *:hover{
+.palette:hover{
     cursor: pointer;
-}
-.red{
-    color: #f00;
-    background-color: #222;
-}
-.red:hover{
-    color: #222;
-    background-color: #f00;
-}
-.orange{
-    color: #f70;
-    background-color: #222;
-}
-.orange:hover{
-    color: #222;
-    background-color: #f70;
-}
-.yellow{
-    color: #ff0;
-    background-color: #222;
-}
-.yellow:hover{
-    color: #222;
-    background-color: #ff0;
-}
-.green{
-    color: #0f0;
-    background-color: #222;
-}
-.green:hover{
-    color: #222;
-    background-color: #0f0;
-}
-.blue{
-    color: #00f;
-    background-color: #222;
-}
-.blue:hover{
-    color: #222;
-    background-color: #00f;
-}
-.indigo{
-    color: #107;
-    background-color: #222;
-}
-.indigo:hover{
-    color: #222;
-    background-color: #107;
-}
-.violet{
-    color: #a0f;
-    background-color: #222;
-}
-.violet:hover{
-    color: #222;
-    background-color: #a0f;
-}
-.white{
-    color: #fff;
-    background-color: #222;
-}
-.white:hover{
-    color: #222;
-    background-color: #fff;
-}
-.gray{
-    color: #777;
-    background-color: #222;
-}
-.gray:hover{
-    color: #222;
-    background-color: #777;
-}
-.black{
-    color: #000;
-    background-color: #222;
-}
-.black:hover{
-    color: #222;
-    background-color: #000;
 }
 .module-container{
     display: flex;
     width: 100%;
     justify-content: space-between;
-    margin-top: 5vw;
+    margin-top: 1vw;
 }
 .module{
     background-color: #f00;
@@ -191,7 +101,7 @@ input:hover{
     justify-content: center;
     align-items: center;
 }
-.p2, .arrow-input, .screens .screen div{
+.arrow-input, .answer{
     display: none;
 }
 .submit{
@@ -201,7 +111,7 @@ input:hover{
 }
 .screen{
     font-family: 'Module Font';
-    background-color: #111;
+    background-color: #000;
     color: #fff;
     display: flex;
     justify-content: center;
@@ -239,7 +149,6 @@ input:hover{
 .answer{
     width: 100%;
     height: 100%;
-    display: flex;
     justify-content: center;
     align-items: center;
 }
