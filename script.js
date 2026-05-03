@@ -1,4 +1,12 @@
-// Fully rework changePage() (by recreating inputs every color change)
+async function diary(){
+    const r=await fetch("diary.json");
+    return await r.json();
+}
+async function dfg(){
+    const r=await fetch("test.json");
+    return await r.json();
+}
+dfg().then(a=>{console.log(a.page1[1])})
 const letters="abcdefghijklmnopqrstuvwxyz";
 const matrix_abc="abcdefghiklmnopqrstuvwxyz";
 const digit_words=["zero","one","two","three","four","five","six","seven","eight","nine"];
@@ -21,7 +29,8 @@ const edgeworks=[
     [],
     ["NUMBER OF PORTS","NUMBER OF LIT INDICATORS","SN SECOND LETTER"],
     ["SN FIRST CHARACTER"],
-    ["SN FIRST LETTER","SN LAST LETTER","SN SECOND CHARACTER"]
+    ["SN FIRST LETTER","SN LAST LETTER","SN SECOND CHARACTER"],
+    []//WIP
 ];
 const lengths=[
     [6,6,0,8,8,8,1,1,1],
@@ -33,7 +42,8 @@ const lengths=[
     [6,6,2,8,0,0],
     [6,8,0,8,8,0,2,2,1],
     [6,6,6,3,0,0,1],
-    [6,8,8,16,3,14,1,1,1]
+    [6,8,8,16,3,14,1,1,1],
+    [6,6,6,6,6,6]//WIP
 ];
 const allowed=[
     [letters,letters,"",letters,letters,letters,digits,digits,digits],
@@ -45,7 +55,8 @@ const allowed=[
     [letters,letters,digits,letters,"",""],
     [letters,digits.slice(0,9),"",letters,letters,"",digits,digits,letters],
     [letters,"01",digits.slice(1,7),letters,"","",digits+letters],
-    [letters,letters,letters,"abcvi-",letters,letters+"-",letters,letters,digits+letters]
+    [letters,letters,letters,"abcvi-",letters,letters+"-",letters,letters,digits+letters],
+    []//WIP
 ];
 const pages=[2,2,2,2,2,2,2,2,2,2,2,3,2,2,3,1,2,4];
 
@@ -82,6 +93,18 @@ function composekey(placeholderword,edgeworkEL,parity){
     }
     return placeholder;
 }
+function s(encrypted){
+    return encrypted.slice(6);
+}
+function end(encrypted){
+    if(encrypted.length!=6){
+        return "ERROR";
+    }
+    else{
+        return encrypted.toUpperCase();
+    }
+}
+
 function red(edgework, inputs){
     let firstdigit=Number(edgework[0]);
     let seconddigit=Number(edgework[1]);
@@ -102,7 +125,7 @@ function red(edgework, inputs){
             encrypted+=encrypted[i];
         }
     }
-    encrypted=encrypted.slice(6);
+    encrypted=s(encrypted);
     let key1="";
     let matrix1_abc=matrix_abc;
     for(let i=0;i<KW1.length;i++){
@@ -151,7 +174,7 @@ function red(edgework, inputs){
             encrypted+=matrix1[row1*5+col2]+matrix1[row2*5+col1]
         }
     }
-    encrypted=encrypted.slice(6);
+    encrypted=s(encrypted);
     let key2="";
     let matrix2_abc=matrix_abc;
     for(let i=0;i<KW2.length;i++){
@@ -184,7 +207,7 @@ function red(edgework, inputs){
     for(let i=0;i<6;i++){
         encrypted+=matrix1[set2[i]*5+set2[i+6]];
     }
-    encrypted=encrypted.slice(6);
+    encrypted=s(encrypted);
     let key3=[];
     let matrix3_abc=matrix_abc;
     for(let i=0;i<KW3.length;i++){
@@ -216,7 +239,7 @@ function red(edgework, inputs){
         col2=letter1%5;
         encrypted+=matrix1[row1*5+col1]+matrix2[row2*5+col2];
     }
-    encrypted=encrypted.slice(6);
+    encrypted=s(encrypted);
     for(let i=0;i<6;i++){
         if(endreplace.includes(i)){
             encrypted+="j";
@@ -225,13 +248,8 @@ function red(edgework, inputs){
             encrypted+=encrypted[i];
         }
     }
-    encrypted=encrypted.slice(6);
-    if(encrypted.length!=6){
-        return "ERROR";
-    }
-    else{
-        return encrypted.toUpperCase();
-    }
+    encrypted=s(encrypted);
+    return end(encrypted);
 }
 function orange(edgework, inputs){
     let firstdigit=Number(edgework[0]);
@@ -254,7 +272,7 @@ function orange(edgework, inputs){
             encrypted+=encrypted[i];
         }
     }
-    encrypted=encrypted.slice(6);
+    encrypted=s(encrypted);
     let key1="";
     let matrix1_abc=matrix_abc;
     for(let i=0;i<KW.length;i++){
@@ -336,11 +354,11 @@ function orange(edgework, inputs){
     for(let i=0;i<groups.length;i++){
         encrypted+=groups[i].split("").reverse().join("");
     }
-    encrypted=encrypted.slice(6);
+    encrypted=s(encrypted);
     for(let i=0;i<6;i++){
         encrypted+=matrix2[matrix3.indexOf(encrypted[i])];
     }
-    encrypted=encrypted.slice(6);
+    encrypted=s(encrypted);
     let key4="";
     let matrix4_abc=matrix_abc;
     for(let i=0;i<keyword.length;i++){
@@ -378,7 +396,7 @@ function orange(edgework, inputs){
         c2=l1%5;
         encrypted+=matrix1[r1*5+c1]+matrix4[r2*5+c2];
     }
-    encrypted=encrypted.slice(6);
+    encrypted=s(encrypted);
     for(let i=0;i<6;i++){
         if(endreplace.includes(i)){
             encrypted+="j";
@@ -387,13 +405,8 @@ function orange(edgework, inputs){
             encrypted+=encrypted[i];
         }
     }
-    encrypted=encrypted.slice(6);
-    if(encrypted.length!=6){
-        return "ERROR";
-    }
-    else{
-        return encrypted.toUpperCase();
-    }
+    encrypted=s(encrypted);
+    return end(encrypted);
 }
 function yellow(edgework, inputs){
     let batteries=Number(edgework[0]);
@@ -460,7 +473,7 @@ function yellow(edgework, inputs){
         encrypted+=remaining;
         remaining=digitrow.slice(0,26);
     }
-    encrypted=encrypted.slice(6);
+    encrypted=s(encrypted);
     let finalnumbers=[];
     let currentnumber="";
     for(let i=0;i<numberchain.length;i++){
@@ -491,13 +504,8 @@ function yellow(edgework, inputs){
         letter2=letters.indexOf(encrypted[i*2+1])+1;
         encrypted+=letters[mod((letter1*finalnumbers[0]+letter2*finalnumbers[1])%26-1,26)]+letters[mod((letter1*finalnumbers[2]+letter2*finalnumbers[3])%26-1,26)];
     }
-    encrypted=encrypted.slice(6);
-    if(encrypted.length!=6){
-        return "ERROR";
-    }
-    else{
-        return encrypted.toUpperCase();
-    }
+    encrypted=s(encrypted);
+    return end(encrypted);
 }
 function green(edgework, inputs){
     let unlit=Number(edgework[0]);
@@ -538,18 +546,13 @@ function green(edgework, inputs){
     for(let i=0;i<6;i++){
         encrypted+=ragbaby[mod(ragbaby.indexOf(encrypted[i])-(i+1),26)];
     }
-    encrypted=encrypted.slice(6);
+    encrypted=s(encrypted);
     const letterstable="ufhkqiplxnzesgbvmcwjrdotyaiwczymlkjodgfsqrnbtxhuevapwbsmejtucpfahzoqliknyvgxrdgrinqvwotyajxbmhcfklduszepdltvsuikwcxrfjzanyhmqogepbfsvceiujkpgntyhblrqoxmadwzjocywfpadkhiuvtsmengqlzbrxbphoraknuetdzyqimsfjgvwcxlandsqwtgxkfpcovblmyezhrjiuaqjpbusgwnxzvdyletcofhrimkbhftdgerxjamunzvykospilcwqjhukdmsnebiczywlxqfportavgasntzdbgwyileorcqfxjpkhmvurpcqabvlgwfenikymdutsjxozhyixnvwqsuhfomzdgkjpctbelarimpczlegjarntwsyfqdoubkhvxjgkoxmubavrtfycnpwqzesilhdsvhdbznmkwjieuyfxrqplgcatotzxgopnbwaiyrhqlvkjscduefmdjqzywtpkixcvabfnueolhsgrmcjoedyhbnixzrtpwgalfkusmvqfehlyobgrxqkvzuimjtnacdpswmogapthizxrfklysvdbwuqnecjrxmsbpwoejadiynqlgkctuhzfvzjvwfbeotkrdhscpigqnayluxmvwfxuekrlbqtmchsqjozydapin";
     for(let i=0;i<6;i++){
         encrypted+=letters[letterstable.slice(letters.indexOf(key[i])*26,(letters.indexOf(key[i])+1)*26).indexOf(encrypted[i])];
     }
-    encrypted=encrypted.slice(6);
-    if(encrypted.length!=6){
-        return "ERROR";
-    }
-    else{
-        return encrypted.toUpperCase();
-    }
+    encrypted=s(encrypted);
+    return end(encrypted);
 }
 function blue(edgework, inputs){
     let indicators=Number(edgework[0]);
@@ -566,17 +569,12 @@ function blue(edgework, inputs){
     for(let i=0;i<6;i++){
         encrypted+=letters[25-letters.indexOf(encrypted[i])];
     }
-    encrypted=encrypted.slice(6);
+    encrypted=s(encrypted);
     for(let i=0;i<6;i++){
         encrypted+=letters[mod(letters.indexOf(encrypted[i])-letters.indexOf(key[i]),26)-1];
     }
-    encrypted=encrypted.slice(6);
-    if(encrypted.length!=6){
-        return "ERROR";
-    }
-    else{
-        return encrypted.toUpperCase();
-    }
+    encrypted=s(encrypted);
+    return end(encrypted);
 }
 function indigo(edgework, inputs){
     let ports=Number(edgework[0]);
@@ -632,7 +630,7 @@ function indigo(edgework, inputs){
         encrypted+=letterkey[x];
         offset=x+1;
     }
-    encrypted=encrypted.slice(6);
+    encrypted=s(encrypted);
     let binary=[];
     let currentnumber="";
     logicgateencr=logicgateencr.replace("? ","");
@@ -810,13 +808,8 @@ function indigo(edgework, inputs){
         encrypted+=letters[currentanswer];
         currentanswer=0;
     }
-    encrypted=encrypted.slice(6);
-    if(encrypted.length!=6){
-        return "ERROR";
-    }
-    else{
-        return encrypted.toUpperCase();
-    }
+    encrypted=s(encrypted);
+    return end(encrypted);
 }
 function violet(edgework, inputs){
     let encrypted=inputs[0];
@@ -832,7 +825,7 @@ function violet(edgework, inputs){
             encrypted+=letters[(letters.slice(13+Math.floor(letters.indexOf(key[i])/2))+letters.slice(13,13+Math.floor(letters.indexOf(key[i])/2))).indexOf(encrypted[i])];
         }
     }
-    encrypted=encrypted.slice(6);
+    encrypted=s(encrypted);
     let grid=["012543","015243"][Number(number[0])-1];
     for(let i=0;i<6;i++){
         grid+=String((Number(grid[i])+Number(number[1])-1)%6);
@@ -841,18 +834,13 @@ function violet(edgework, inputs){
     for(let i=0;i<6;i++){
         encrypted+=encrypted[Number(grid[i])];
     }
-    encrypted=encrypted.slice(6);
+    encrypted=s(encrypted);
     let quagmire=composekey(quagmireword,0,0);
     for(let i=0;i<6;i++){
         encrypted+=letters[(quagmire.slice(quagmire.indexOf(key[i]))+quagmire.slice(0,quagmire.indexOf(key[i]))).indexOf(encrypted[i])];
     }
-    encrypted=encrypted.slice(6);
-    if(encrypted.length!=6){
-        return "ERROR";
-    }
-    else{
-        return encrypted.toUpperCase();
-    }
+    encrypted=s(encrypted);
+    return end(encrypted);
 }
 function white(edgework, inputs){
     let ports=Number(edgework[0]);
@@ -873,7 +861,7 @@ function white(edgework, inputs){
     for(let i=0;i<6;i++){
         encrypted+=letters[(letters.indexOf(encrypted[i])+number)%26];
     }
-    encrypted=encrypted.slice(6);
+    encrypted=s(encrypted);
     let key=key1+key2;
     for(let i=0;i<4;i++){
         for(let j=0;j<4;j++){
@@ -908,13 +896,8 @@ function white(edgework, inputs){
             seanshifter.splice(0,1);
         }
     }
-    encrypted=encrypted.slice(6);
-    if(encrypted.length!=6){
-        return "ERROR";
-    }
-    else{
-        return encrypted.toUpperCase();
-    }
+    encrypted=s(encrypted);
+    return end(encrypted);
 }
 function gray(edgework, inputs){
     let firstchar=edgework[0];
@@ -954,7 +937,7 @@ function gray(edgework, inputs){
         }
         encrypted+=letters[letter-1];
     }
-    encrypted=encrypted.slice(6);
+    encrypted=s(encrypted);
     let grid;
     switch(gridscr.length){
         case 2:
@@ -987,7 +970,7 @@ function gray(edgework, inputs){
             }
         }
     }
-    encrypted=encrypted.slice(6);
+    encrypted=s(encrypted);
     const fixed=(letters.slice(13)+letters.slice(13)).slice(0,-1)+(step(letters,0)+step(letters,0)).slice(0,-1)+(step(letters,1)+step(letters,1)).slice(0,-1);
     let string;
     let col1;
@@ -1016,15 +999,10 @@ function gray(edgework, inputs){
             encrypted+=string.slice(0,26)[col2+e]+string.slice(26)[col1+f];
         }
     }
-    encrypted=encrypted.slice(6);
+    encrypted=s(encrypted);
     encrypted+=step(encrypted,0)+step(encrypted,1);
-    encrypted=encrypted.slice(6);
-    if(encrypted.length!=6){
-        return "ERROR";
-    }
-    else{
-        return encrypted.toUpperCase();
-    }
+    encrypted=s(encrypted);
+    return end(encrypted);
 }
 function black(edgework, inputs){
     let firstletter=edgework[0];
@@ -1077,7 +1055,7 @@ function black(edgework, inputs){
         }
         encrypted+=key1[Number(numbers[i*3])+row1*9-1]+key2[Number(numbers[i*3+2])+row2*9-1];
     }
-    encrypted=encrypted.slice(6);
+    encrypted=s(encrypted);
     if(digits.includes(secondchar)){
         secondchar=Number(secondchar);
     }
@@ -1107,7 +1085,7 @@ function black(edgework, inputs){
             }
         }
     }
-    encrypted=encrypted.slice(6);
+    encrypted=s(encrypted);
     const rotors=[["ekmflgdqvzntowyhxuspaibrcj",letters.replace("d","D").replace("q","Q")],["ajdksiruxblhwtmcqgznpyfvoe",letters.replace("e","E").replace("r","R")],["bdfhjlcprtxvznyeiwgakmusqo",letters.replace("i","I").replace("v","V")],["esovpzjayquirhxlnftgkdcmwb",letters.replace("j","J").replace("w","W")],["vzbrgityupsdnhlxawmjqofeck",letters.replace("m","M").replace("z","Z")],["jpgvoumfyqbenhzrdkasxlictw",letters.replace("l","L").replace("y","Y")],["nzjhgrcxmyswboufaivlpekqdt",letters.replace("h","H").replace("u","U")],["fkqhtlxocbjspdzramewniuygv",letters.replace("c","C").replace("p","P")]];
     const reflectors=[[letters,"lusnpqomjiyahdgefxcvbtzrkw"],[letters,"xqumfepowltjdzhgbvykcriasn"],[letters,"eskoaqmjyhcpgtdlfubnrxzviw"]];
     let config=plugboard.split("-").reverse();
@@ -1170,13 +1148,26 @@ function black(edgework, inputs){
             }
         }
     }
-    encrypted=encrypted.slice(6);
-    if(encrypted.length!=6){
-        return "ERROR";
+    encrypted=s(encrypted);
+    return end(encrypted);
+}
+function brown(edgework, inputs){
+    let firstdigit=Number(edgework[0]);
+    let encrypted=inputs[0];
+    let r1=inputs[1];
+    let r2=inputs[2];
+    let r3=inputs[3];
+    let r4=inputs[4];
+    let r5=inputs[5];
+
+    for(let i=0;i<6;i++){
+        let w=letters.indexOf(r1[i])+1;
+        let x=letters.indexOf(r2[i])+1;
+        let y=Number(r3[i])*10+Number(r4[i]);
+        let z=letters.indexOf(r5[i])+1;
     }
-    else{
-        return encrypted.toUpperCase();
-    }
+    encrypted=s(encrypted);
+    return end(encrypted);
 }
 
 function solve(){
