@@ -2,6 +2,7 @@ let text;
 async function loadDiary(){
     const a=await fetch("diary.txt");
     text=await a.text();
+    console.log("Diary loaded")
 }
 loadDiary();
 const letters="abcdefghijklmnopqrstuvwxyz";
