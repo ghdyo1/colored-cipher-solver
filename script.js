@@ -1,12 +1,9 @@
-async function diary(){
-    const r=await fetch("diary.json");
-    return await r.json();
+let text;
+async function loadDiary(){
+    const a=await fetch("diary.txt");
+    text=await a.text();
 }
-async function dfg(){
-    const r=await fetch("test.json");
-    return await r.json();
-}
-dfg().then(a=>{console.log(a.page1[1])})
+loadDiary();
 const letters="abcdefghijklmnopqrstuvwxyz";
 const matrix_abc="abcdefghiklmnopqrstuvwxyz";
 const digit_words=["zero","one","two","three","four","five","six","seven","eight","nine"];
@@ -30,7 +27,7 @@ const edgeworks=[
     ["NUMBER OF PORTS","NUMBER OF LIT INDICATORS","SN SECOND LETTER"],
     ["SN FIRST CHARACTER"],
     ["SN FIRST LETTER","SN LAST LETTER","SN SECOND CHARACTER"],
-    []//WIP
+    ["SERIAL NUMBER"]
 ];
 const lengths=[
     [6,6,0,8,8,8,1,1,1],
@@ -43,7 +40,7 @@ const lengths=[
     [6,8,0,8,8,0,2,2,1],
     [6,6,6,3,0,0,1],
     [6,8,8,16,3,14,1,1,1],
-    [6,6,6,6,6,6]//WIP
+    [6,6,6,6,6,6,6]
 ];
 const allowed=[
     [letters,letters,"",letters,letters,letters,digits,digits,digits],
@@ -56,7 +53,7 @@ const allowed=[
     [letters,digits.slice(0,9),"",letters,letters,"",digits,digits,letters],
     [letters,"01",digits.slice(1,7),letters,"","",digits+letters],
     [letters,letters,letters,"abcvi-",letters,letters+"-",letters,letters,digits+letters],
-    []//WIP
+    [letters,letters,letters,digits,digits,letters,digits+letters]
 ];
 const pages=[2,2,2,2,2,2,2,2,2,2,2,3,2,2,3,1,2,4];
 
@@ -1152,7 +1149,8 @@ function black(edgework, inputs){
     return end(encrypted);
 }
 function brown(edgework, inputs){
-    let firstdigit=Number(edgework[0]);
+    const diary=text;
+    let SN=edgework[0];
     let encrypted=inputs[0];
     let r1=inputs[1];
     let r2=inputs[2];
@@ -1160,11 +1158,48 @@ function brown(edgework, inputs){
     let r4=inputs[4];
     let r5=inputs[5];
 
+    let key="";
     for(let i=0;i<6;i++){
-        let w=letters.indexOf(r1[i])+1;
-        let x=letters.indexOf(r2[i])+1;
-        let y=Number(r3[i])*10+Number(r4[i]);
-        let z=letters.indexOf(r5[i])+1;
+        let w=letters.indexOf(r1[i]);
+        let x=letters.indexOf(r2[i]);
+        let y=Number(r3[i])*10+Number(r4[i])-1;
+        let z=letters.indexOf(r5[i]);
+        key+=diary.split("\r\n\r\n")[w].split("\r\n")[x].split(" ")[y].replace(/[^a-zA-Z0-9]/g,"")[z].toLowerCase();
+    }
+    const rowslist="niptlvzwhacbfqgmsrxyuojedksfhlnygcuqwxdevkoizmtbpjarwjcxpnverysqbdifztmgoukhlaghejxbfplumknrzcawosqyvditrujvmctaihxgeplndqyokfzbwsldwsyhkbovgcrmnetpiqajxfzuonmirkqydjetczwglfbxhasvupmtvybrxnfdjoasuqpekliwhgczectnhowfbmlvyjsrxguzdiapkquaqwgtiknfhlvxmzeodcjpbrsydsykujatzloemirbfhnwpvcqgxpwkgsaoqecrmzlxjyuhtfndivbbqxrzmsvatkpjofigdluwhenycvlaqdzjxmkfighouwsrebcytpntyguoxdlpnzwikesbafvmrqcjhfoidvwysjzpuxbtahnercmlkqgqzrekpbgsxunwvctmyjfldoahihgoacunikrqzpwjyvltbsefxmdkefbqdhzwsartnplcvgiyxmuojzrlcjemhtpvaouqdnxwkgsiybfabzpigrdvoyslchxukqjntwmfecpumfqlrgidjhyavkbsnxztoewivsztfuoywndkgbpjcaheqrlxmxknfescjqbtyuadhimvpzlgwrojxdhwiemcgbfqtyorzpavkusnlymboalpuxeihsfkwqjcdrgnztv";
+    let row;
+    let column=0;
+    for(let i=0;i<6;i++){
+        if(digits.includes(SN[i])){
+            column+=Number(SN[i]);
+        }
+    }
+    column%=25;
+    column=26-column;
+    for(let i=0;i<6;i++){
+        row=rowslist.slice(letters.indexOf(key[i])*26,(letters.indexOf(key[i])+1)*26);
+        row=row.slice(row.indexOf(encrypted[i]))+row.slice(0,row.indexOf(encrypted[i]));
+        encrypted+=row[column-1];
+    }
+    encrypted=s(encrypted);
+    const binarylist="111000000010101101011100101110100011011000101010110101011010111001001011000111101100100110111011001101111101011001110000101110100101011111111010010110000101000011010001010000010010100001001010001100110111111100000100";
+    let binary="";
+    let lugs=[];
+    for(let i=0;i<6;i++){
+        binary+=binarylist.slice((digits+letters).indexOf(SN[i])*6,((digits+letters).indexOf(SN[i])+1)*6);
+        lugs.push(letters.indexOf(key[i])%13+1);
+    }
+    let letter;
+    for(let i=0;i<6;i++){
+        letter=26-letters.indexOf(encrypted[i]);
+        for(let j=0;j<6;j++){
+            if(binary[j*6+i]=="1"){
+                letter+=lugs[j];
+            }
+        }
+        letter-=1;
+        letter%=26;
+        encrypted+=letters[letter];
     }
     encrypted=s(encrypted);
     return end(encrypted);
@@ -1206,6 +1241,8 @@ function solve(){
                 return gray(edgework,inputs);
             case "k":
                 return black(edgework,inputs);
+            case "n":
+                return brown(edgework,inputs);
         }
     }
     catch(error){
@@ -1228,7 +1265,7 @@ function changeMode(){
     if(mode=="input"){
         let ewi=0;
         document.querySelectorAll(".edgework input").forEach(a=>{if(a.value==""){ewi+=1}});
-        document.querySelectorAll(".screens .screen input").forEach(a=>{if(a.value.length>0||lengths[colors.indexOf(color)][["t1","m1","b1","t2","m2","b2"].indexOf(a.id)]==0){ewi+=0}else{ewi+=1}});
+        document.querySelectorAll(".screens .screen input").forEach(a=>{if(a.value.length>0||lengths[colors.indexOf(color)]["tmb".indexOf(a.id[0])+(Number(a.id[1])-1)*3]==0){ewi+=0}else{ewi+=1}});
         if(color=="k"){
             document.querySelectorAll(".arrow-input").forEach(a=>{if(a.value.length==0){ewi+=1}})
         }
@@ -1259,8 +1296,8 @@ function changeMode(){
             document.querySelectorAll(".arrow-text").forEach(a=>{a.style.display="flex"});
             document.querySelector(".answer").style.display="flex";
             document.querySelector(".submit").textContent="";
-            document.querySelectorAll(".arrow")[0].removeEventListener("click",()=>{changePage("prev")});
-            document.querySelectorAll(".arrow")[1].removeEventListener("click",()=>{changePage("next")});
+            document.querySelectorAll(".arrow")[0].removeEventListener("click",pagePrev);
+            document.querySelectorAll(".arrow")[1].removeEventListener("click",pageNext);
             document.querySelector(".keyboard").textContent="Press the page screen to start a new solve";
             mode="output";
         }
@@ -1280,8 +1317,8 @@ function changeMode(){
         }
         document.querySelector(".answer").style.display="none";
         document.querySelector(".submit").textContent="1";
-        document.querySelectorAll(".arrow")[0].addEventListener("click",()=>{changePage("prev")});
-        document.querySelectorAll(".arrow")[1].addEventListener("click",()=>{changePage("next")});
+        document.querySelectorAll(".arrow")[0].addEventListener("click",pagePrev);
+        document.querySelectorAll(".arrow")[1].addEventListener("click",pageNext);
         document.querySelector(".status-light").style.backgroundColor="#223";
         document.querySelector(".keyboard").textContent="Press the page screen to solve the module";
         mode="input";
@@ -1321,6 +1358,29 @@ function recreateInputs(){
         }
     }
     changePage(1);
+    document.querySelectorAll("input").forEach(a=>{a.addEventListener("input",()=>{
+        a.value=a.value.toUpperCase();
+        let empty;
+        document.querySelectorAll(".edgework input").forEach(b=>{if(b.value==""){empty=1}});
+        document.querySelectorAll(".screens .screen input").forEach(b=>{if(b.value==""&&lengths[colors.indexOf(color)]["tmb".indexOf(b.id[0])+(Number(b.id[1])-1)*3]!=0){empty=1}});
+        if(color=="k"){document.querySelectorAll(".arrow-input").forEach(b=>{if(b.value==""){empty=1}})}
+        if(empty!=1){document.querySelector(".keyboard").textContent="Press the page screen to solve the module"};
+    })});
+    document.querySelectorAll(".screens .screen input").forEach(a=>{a.addEventListener("input",()=>{
+        for(let i=0;i<a.value.length;i++){
+            if(!allowed[colors.indexOf(color)]["tmb".indexOf(a.id[0])+(Number(a.id[1])-1)*3].toUpperCase().includes(a.value[i])){
+                a.value=a.value.slice(0,i)+"#"+a.value.slice(i+1);
+            }
+        }
+        a.value=a.value.replaceAll("#","");
+        if(a.value.length>lengths[colors.indexOf(color)]["tmb".indexOf(a.id[0])+(Number(a.id[1])-1)*3]){a.value=a.value.slice(0,lengths[colors.indexOf(color)]["tmb".indexOf(a.id[0])+(Number(a.id[1])-1)*3])}
+    })});
+}
+function pagePrev(){
+    changePage("prev");
+}
+function pageNext(){
+    changePage("next");
 }
 
 recreateEdgeworks();
@@ -1384,27 +1444,9 @@ for(let i=0;i<colorwords.length;i++){
 }
 
 document.querySelector(".submit").addEventListener("click",changeMode);
-document.querySelectorAll(".arrow")[0].addEventListener("click",()=>{changePage("prev")});
-document.querySelectorAll(".arrow")[1].addEventListener("click",()=>{changePage("next")});
-document.querySelectorAll("input").forEach(a=>{a.addEventListener("input",()=>{a.value=a.value.toUpperCase();})});
+document.querySelectorAll(".arrow")[0].addEventListener("click",pagePrev);
+document.querySelectorAll(".arrow")[1].addEventListener("click",pageNext);
 document.querySelectorAll(".arrow-input").forEach(a=>{a.addEventListener("input",()=>{
     if(a.value.length>1){a.value=a.value.slice(0,1)}
     if(!(letters+"#").includes(a.value.toLowerCase())){a.value=""}
 })});
-document.querySelectorAll(".screens .screen input").forEach(a=>{a.addEventListener("input",()=>{
-    let b=0;
-    for(let i=0;i<a.value.length;i++){
-        if(!allowed[colors.indexOf(color)][["t1","m1","b1","t2","m2","b2"].indexOf(a.id)].toUpperCase().includes(a.value[i])){
-            a.value=a.value.slice(0,i)+"#"+a.value.slice(i+1);
-        }
-    }
-    a.value=a.value.replaceAll("#","");
-    if(a.value.length>lengths[colors.indexOf(color)][["t1","m1","b1","t2","m2","b2"].indexOf(a.id)]){a.value=a.value.slice(0,lengths[colors.indexOf(color)][["t1","m1","b1","t2","m2","b2"].indexOf(a.id)])}
-})});
-document.querySelectorAll("input").forEach(a=>{a.addEventListener("input",()=>{
-    let empty;
-    document.querySelectorAll(".edgework input").forEach(b=>{if(b.value==""){empty=1}});
-    document.querySelectorAll(".screens .screen input").forEach(b=>{if(b.value==""&&lengths[colors.indexOf(color)][["t1","m1","b1","t2","m2","b2"].indexOf(b.id)]!=0){empty=1}});
-    if(color=="k"){document.querySelectorAll(".arrow-input").forEach(b=>{if(b.value==""){empty=1}})}
-    if(empty!=1){document.querySelector(".keyboard").textContent="Press the page screen to solve the module"}
-})})
