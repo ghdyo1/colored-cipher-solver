@@ -1165,6 +1165,7 @@ function brown(edgework, inputs){
         let x=letters.indexOf(r2[i]);
         let y=Number(r3[i])*10+Number(r4[i])-1;
         let z=letters.indexOf(r5[i]);
+        console.log(w,x,y,z,diary.split("\n\n")[w],diary.split("\n\n")[w].split("\n")[x],diary.split("\n\n")[w].split("\n")[x].split(" ")[y],diary.split("\n\n")[w].split("\n")[x].split(" ")[y].replace(/[^a-zA-Z0-9]/g,"")[z])
         key+=diary.split("\n\n")[w].split("\n")[x].split(" ")[y].replace(/[^a-zA-Z0-9]/g,"")[z].toLowerCase();
     }
     const rowslist="niptlvzwhacbfqgmsrxyuojedksfhlnygcuqwxdevkoizmtbpjarwjcxpnverysqbdifztmgoukhlaghejxbfplumknrzcawosqyvditrujvmctaihxgeplndqyokfzbwsldwsyhkbovgcrmnetpiqajxfzuonmirkqydjetczwglfbxhasvupmtvybrxnfdjoasuqpekliwhgczectnhowfbmlvyjsrxguzdiapkquaqwgtiknfhlvxmzeodcjpbrsydsykujatzloemirbfhnwpvcqgxpwkgsaoqecrmzlxjyuhtfndivbbqxrzmsvatkpjofigdluwhenycvlaqdzjxmkfighouwsrebcytpntyguoxdlpnzwikesbafvmrqcjhfoidvwysjzpuxbtahnercmlkqgqzrekpbgsxunwvctmyjfldoahihgoacunikrqzpwjyvltbsefxmdkefbqdhzwsartnplcvgiyxmuojzrlcjemhtpvaouqdnxwkgsiybfabzpigrdvoyslchxukqjntwmfecpumfqlrgidjhyavkbsnxztoewivsztfuoywndkgbpjcaheqrlxmxknfescjqbtyuadhimvpzlgwrojxdhwiemcgbfqtyorzpavkusnlymboalpuxeihsfkwqjcdrgnztv";
