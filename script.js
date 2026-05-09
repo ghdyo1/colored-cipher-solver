@@ -2,7 +2,7 @@ let text;
 async function loadDiary(){
     const a=await fetch("./diary.txt");
     text=await a.text();
-    console.log("Diary loaded", text.split("\r\n\r\n")[0].split("\r\n")[0])
+    console.log("Diary loaded", text.split("\n\n")[0].split("\n")[0])
 }
 loadDiary();
 const letters="abcdefghijklmnopqrstuvwxyz";
@@ -1205,6 +1205,14 @@ function brown(edgework, inputs){
     encrypted=s(encrypted);
     return end(encrypted);
 }
+// function /*color*/a(edgework, inputs){
+//     let firstdigit=Number(edgework[0]);
+//     let encrypted=inputs[0];
+
+//     //code
+//     encrypted=s(encrypted);
+//     return end(encrypted);
+// }
 
 function solve(){
     let inputs=[];
