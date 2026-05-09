@@ -2,7 +2,7 @@ let text;
 async function loadDiary(){
     const a=await fetch("./diary.txt");
     text=await a.text();
-    console.log("Diary loaded", diary.split("\r\n\r\n")[0].split("\r\n")[0])
+    console.log("Diary loaded", text.split("\r\n\r\n")[0].split("\r\n")[0])
 }
 loadDiary();
 const letters="abcdefghijklmnopqrstuvwxyz";
