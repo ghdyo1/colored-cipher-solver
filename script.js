@@ -28,7 +28,8 @@ const edgeworks=[
     ["NUMBER OF PORTS","NUMBER OF LIT INDICATORS","SN SECOND LETTER"],
     ["SN FIRST CHARACTER"],
     ["SN FIRST LETTER","SN LAST LETTER","SN SECOND CHARACTER"],
-    ["SERIAL NUMBER"]
+    ["SERIAL NUMBER"],
+    []
 ];
 const lengths=[
     [6,6,0,8,8,8,1,1,1],
@@ -41,7 +42,8 @@ const lengths=[
     [6,8,0,8,8,0,2,2,1],
     [6,6,6,3,0,0,1],
     [6,8,8,16,3,14,1,1,1],
-    [6,6,6,6,6,6,6]
+    [6,6,6,6,6,6,6],
+    [6,5,3,8,8,8,8,8,8]
 ];
 const allowed=[
     [letters,letters,"",letters,letters,letters,digits,digits,digits],
@@ -54,7 +56,8 @@ const allowed=[
     [letters,digits.slice(0,9),"",letters,letters,"",digits,digits,letters],
     [letters,"01",digits.slice(1,7),letters,"","",digits+letters],
     [letters,letters,letters,"abcvi-",letters,letters+"-",letters,letters,digits+letters],
-    [letters,letters,letters,digits,digits,letters,digits+letters]
+    [letters,letters,letters,digits,digits,letters,digits+letters],
+    [letters,digits.slice(1,6),letters,letters,letters,letters,letters,letters,letters]
 ];
 const pages=[2,2,2,2,2,2,2,2,2,2,2,3,2,2,3,1,2,4];
 
@@ -1205,19 +1208,90 @@ function brown(edgework, inputs){
     encrypted=s(encrypted);
     return end(encrypted);
 }
-// function /*color*/a(edgework, inputs){
-//     let firstdigit=Number(edgework[0]);
-//     let encrypted=inputs[0];
+function maroon(edgework, inputs){
+    let encrypted=inputs[0];
+    let number=inputs[1];
+    let key=inputs[2];
+    let str1=inputs[3];
+    let str2=inputs[4];
+    let str3=inputs[5];
+    let str4=inputs[6];
+    let str5=inputs[7];
+    let str6=inputs[8];
 
-//     //code
-//     encrypted=s(encrypted);
-//     return end(encrypted);
-// }
+    const initial_str=str1+str2+str3+str4+str5+str6;
+    let str="";
+    for(let i=0;i<initial_str.length;i++){
+        if(!str.includes(initial_str[i])){
+            str+=initial_str[i];
+        }
+    }
+    for(let i=0;i<6;i++){
+        encrypted+=letters[str.indexOf(encrypted[i])];
+    }
+    encrypted=s(encrypted);
+    let shuffled=[];
+    for(let i=0;i<number.length;i++){
+        shuffled.push([]);
+    }
+    let row=1;
+    let direction=1;
+    for(let i=0;i<6;i++){
+        shuffled[row-1].push("");
+        if(row==1){
+            direction=1;
+        }
+        if(row==number.length){
+            direction=-1;
+        }
+        row+=direction;
+    }
+    let used=0;
+    for(let i=0;i<shuffled.length;i++){
+        for(let j=0;j<shuffled[Number(number[i]-1)].length;j++){
+            shuffled[Number(number[i]-1)][j]=encrypted[used];
+            used++;
+        }
+    }
+    row=1;
+    direction=1;
+    for(let i=0;i<6;i++){
+        for(let j=0;j<shuffled[row-1].length;j++){
+            if(shuffled[row-1][j]!="*"){
+                encrypted+=shuffled[row-1][j];
+                shuffled[row-1][j]="*";
+                break;
+            }
+        }
+        if(row==1){
+            direction=1;
+        }
+        if(row==number.length){
+            direction=-1;
+        }
+        row+=direction;
+    }
+    encrypted=s(encrypted);
+    let cutabc="";
+    for(let i=0;i<3;i++){
+        cutabc=letters.slice(letters.indexOf(key[i]))+letters.slice(0,letters.indexOf(key[i]));
+        if(str.indexOf(encrypted[i*2])==cutabc.indexOf(encrypted[i*2+1])){
+            encrypted+=str[25-str.indexOf(encrypted[i*2])];
+            encrypted+=cutabc[25-cutabc.indexOf(encrypted[i*2+1])];
+        }
+        else{
+            encrypted+=str[cutabc.indexOf(encrypted[i*2+1])];
+            encrypted+=cutabc[str.indexOf(encrypted[i*2])];
+        }
+    }
+    encrypted=s(encrypted);
+    return end(encrypted);
+}
 
 function solve(){
     let inputs=[];
     let edgework=[];
-    for(let i=0;i<2;i++){
+    for(let i=0;i<pages[colors.indexOf(color)];i++){
         for(let j=0;j<3;j++){
             inputs.push(document.querySelector("#"+"tmb"[j]+(i+1)).value.toLowerCase());
         }
@@ -1252,6 +1326,8 @@ function solve(){
                 return black(edgework,inputs);
             case "n":
                 return brown(edgework,inputs);
+            case "q":
+                return maroon(edgework,inputs);
         }
     }
     catch(error){
