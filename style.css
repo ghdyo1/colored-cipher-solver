@@ -137,14 +137,24 @@ input:hover{
     align-items: center;
     width: 35%;
 }
-.edgework input{
+.edgework *{
     background-color: #111;
     width: 30vw;
-    height: 8vw;
+    height: 100%;
     color: #fff;
-    margin: 2vw,0;
+    border-top: solid #000 1px;
+    border-bottom: solid #000 1px;
     font-family: 'Module Font';
     font-size: 2vw;
+}
+.edgework *:first-child{
+    border-radius: 2vw 2vw 0 0;
+}
+.edgework *:last-child{
+    border-radius: 0 0 2vw 2vw;
+}
+.edgework *:first-child:last-child{
+    border-radius: 2vw;
 }
 .answer{
     width: 100%;

@@ -2,7 +2,8 @@ let text;
 async function loadDiary(){
     const a=await fetch("./diary.txt");
     text=await a.text();
-    console.log("Diary loaded", text.split("\n\n")[0].split("\n")[0])
+    let paragraph1=text.split("\n\n")[0].split("\n")[0].split(" ");
+    console.log(paragraph1[12][6]+paragraph1[1][0]+paragraph1[2][0]+paragraph1[56].slice(1,3)+paragraph1[57][0]+" "+paragraph1[15]);
 }
 loadDiary();
 const letters="abcdefghijklmnopqrstuvwxyz";
@@ -10,6 +11,7 @@ const matrix_abc="abcdefghiklmnopqrstuvwxyz";
 const digit_words=["zero","one","two","three","four","five","six","seven","eight","nine"];
 const morselist=[".-","-...","-.-.","-..",".","..-.","--.","....","..",".---","-.-",".-..","--","-.","---",".--.","--.-",".-.","...","-","..-","...-",".--","-..-","-.--","--.."];
 const roman=["i","ii","iii","iv","v","vi","vii","viii"];
+const braille=["100000","110000","100100","100110","100010","110100","110110","110010","010100","010110","101000","111000","101100","101110","101010","111100","111110","111010","011100","011110","101001","111001","010111","101101","101111","101011"];
 const digits="0123456789";
 const colors="roygbivwaknqlfsmce";
 const hex=["f00","f70","ff0","0f0","00f","217","a0f","fff","777","111","421","835","68f","282","900","f0f","f85","fe9"];
@@ -29,7 +31,8 @@ const edgeworks=[
     ["SN FIRST CHARACTER"],
     ["SN FIRST LETTER","SN LAST LETTER","SN SECOND CHARACTER"],
     ["SERIAL NUMBER"],
-    []
+    [],
+    ["SN FIRST CHARACTER","NUMBER OF INDICATORS","NUMBER OF PORTS","NUMBER OF BATTERIES","NUMBER OF LIT INDICATORS"]//WIP
 ];
 const lengths=[
     [6,6,0,8,8,8,1,1,1],
@@ -43,7 +46,8 @@ const lengths=[
     [6,6,6,3,0,0,1],
     [6,8,8,16,3,14,1,1,1],
     [6,6,6,6,6,6,6],
-    [6,5,3,8,8,8,8,8,8]
+    [6,5,3,8,8,8,8,8,8],
+    [6,5,6,6,8,8,1,2,2]//WIP
 ];
 const allowed=[
     [letters,letters,"",letters,letters,letters,digits,digits,digits],
@@ -57,7 +61,8 @@ const allowed=[
     [letters,"01",digits.slice(1,7),letters,"","",digits+letters],
     [letters,letters,letters,"abcvi-",letters,letters+"-",letters,letters,digits+letters],
     [letters,letters,letters,digits,digits,letters,digits+letters],
-    [letters,digits.slice(1,6),letters,letters,letters,letters,letters,letters,letters]
+    [letters,digits.slice(1,6),letters,letters,letters,letters,letters,letters,letters],
+    [letters,digits+letters+" ",letters,letters,letters,letters,digits+letters,digits,digits]//WIP
 ];
 const pages=[2,2,2,2,2,2,2,2,2,2,2,3,2,2,3,1,2,4];
 
@@ -74,14 +79,14 @@ function rotor(rot,row,lett,con){
     lett=con[rot][(row+1)%2].toLowerCase().indexOf(lett);
     return lett;
 }
-function composekey(placeholderword,edgeworkEL,parity){
+function composekey(placeholderword,edgeworkEL,parity,alphabet=letters){
     let placeholderkey="";
     for(let i=0;i<placeholderword.length;i++){
         if(!placeholderkey.includes(placeholderword[i])){
             placeholderkey+=placeholderword[i];
         }
     }
-    let placeholder_abc=letters;
+    let placeholder_abc=alphabet;
     for(let i=0;i<placeholderkey.length;i++){
         placeholder_abc=placeholder_abc.replace(placeholderkey[i],"");
     }
@@ -94,8 +99,11 @@ function composekey(placeholderword,edgeworkEL,parity){
     }
     return placeholder;
 }
-function s(encrypted){
-    return encrypted.slice(6);
+function s(encrypted,from=6){
+    return encrypted.slice(from);
+}
+function shift(text,index){
+    return text.slice(index)+text.slice(0,index);
 }
 function end(encrypted){
     if(encrypted.length!=6){
@@ -709,7 +717,7 @@ function indigo(edgework, inputs){
                     a+="0";
                 }
             }
-            a=a.slice(5);
+            a=s(a,5);
         }
         b=letters.indexOf(key[i]).toString(2);
         while(b.length!=5){
@@ -727,7 +735,7 @@ function indigo(edgework, inputs){
                     b+="0";
                 }
             }
-            b=b.slice(5);
+            b=s(b,5);
         }
         for(let j=0;j<5;j++){
             switch(gates[0]){
@@ -838,7 +846,7 @@ function violet(edgework, inputs){
     encrypted=s(encrypted);
     let quagmire=composekey(quagmireword,0,0);
     for(let i=0;i<6;i++){
-        encrypted+=letters[(quagmire.slice(quagmire.indexOf(key[i]))+quagmire.slice(0,quagmire.indexOf(key[i]))).indexOf(encrypted[i])];
+        encrypted+=letters[shift(quagmire,quagmire.indexOf(key[i])).indexOf(encrypted[i])];
     }
     encrypted=s(encrypted);
     return end(encrypted);
@@ -869,7 +877,7 @@ function white(edgework, inputs){
             key+=key[[[0,7,9,11],[3,5,13,14],[4,6,8,15],[1,2,10,12]][(i+ports)%4][j]];
         }
     }
-    key=key.slice(16);
+    key=s(key,16);
     let sean=composekey(key,lit,0);
     let seanshifter=[];
     for(let i=0;i<26;i++){
@@ -924,12 +932,12 @@ function gray(edgework, inputs){
                     binary+="0";
                 }
             }
-            binary=binary.slice(5);
+            binary=s(binary,5);
         }
         for(let j=0;j<5;j++){
             binary+=binary[Number(scrambler[j])-1];
         }
-        binary=binary.slice(5);
+        binary=s(binary,5);
         letter=0;
         for(let j=0;j<5;j++){
             if(binary[4-j]=="1"){
@@ -1042,7 +1050,7 @@ function black(edgework, inputs){
             numbers+=numbers.slice(i,9)[j];
         }
     }
-    numbers=numbers.slice(9);
+    numbers=s(numbers,9);
     let row1;
     let row2;
     for(let i=0;i<3;i++){
@@ -1110,7 +1118,7 @@ function black(edgework, inputs){
     }
     for(let i=0;i<3;i++){
         for(let j=0;j<2;j++){
-            config[2-i][j]=config[2-i][j].slice(config[2-i][1].toLowerCase().indexOf(enigmastart[i]))+config[2-i][j].slice(0,config[2-i][1].toLowerCase().indexOf(enigmastart[i]));
+            config[2-i][j]=shift(config[2-i][j],config[2-i][1].toLowerCase().indexOf(enigmastart[i]));
         }
     }
     let letter;
@@ -1182,7 +1190,7 @@ function brown(edgework, inputs){
     column=26-column;
     for(let i=0;i<6;i++){
         row=rowslist.slice(letters.indexOf(key[i])*26,(letters.indexOf(key[i])+1)*26);
-        row=row.slice(row.indexOf(encrypted[i]))+row.slice(0,row.indexOf(encrypted[i]));
+        row=shift(row,row.indexOf(encrypted[i]));
         encrypted+=row[column-1];
     }
     encrypted=s(encrypted);
@@ -1274,7 +1282,7 @@ function maroon(edgework, inputs){
     encrypted=s(encrypted);
     let cutabc="";
     for(let i=0;i<3;i++){
-        cutabc=letters.slice(letters.indexOf(key[i]))+letters.slice(0,letters.indexOf(key[i]));
+        cutabc=shift(letters,letters.indexOf(key[i]));
         if(str.indexOf(encrypted[i*2])==cutabc.indexOf(encrypted[i*2+1])){
             encrypted+=str[25-str.indexOf(encrypted[i*2])];
             encrypted+=cutabc[25-cutabc.indexOf(encrypted[i*2+1])];
@@ -1283,6 +1291,186 @@ function maroon(edgework, inputs){
             encrypted+=str[cutabc.indexOf(encrypted[i*2+1])];
             encrypted+=cutabc[str.indexOf(encrypted[i*2])];
         }
+    }
+    
+    encrypted=s(encrypted);
+    return end(encrypted);
+}
+function cornflower(edgework, inputs){
+    let digit36=edgework[0];
+    let indicators=edgework[1];
+    let ports=edgework[2];
+    let batteries=edgework[3];
+    let lit=edgework[4];
+    let encrypted=inputs[0];
+    let mixed=inputs[1];
+    let coded1=inputs[2];
+    let coded2=inputs[3];
+    let KW1=inputs[4];
+    let KW2=inputs[5];
+
+    let bits=(digits+letters).indexOf(digit36).toString(2);
+    while(bits.length!=5){
+        if(bits.length>5){
+            bits=s(bits,1);
+        }
+        else{
+            bits="0"+bits;
+        }
+    }
+    const d1=indicators%6;
+    const d2=ports%6;
+    if(d1==d2){
+        d2=(ports+1)%6;
+    }
+    const alphabetkey1=composekey(KW1,Number(bits[1]),1);
+    let board1=[["","","","","",""],["","","","","",""],["","","","","",""],["","","","","",""],["","","","","",""]];
+    for(let i=0;i<6;i++){
+        if(i!=d1 && i!=d2){
+            board1[0][i]="#";
+        }
+    }
+    let used1=0;
+    if(bits[0]=="1"){
+        for(let i=0;i<6;i++){
+            for(let j=0;j<5;j++){
+                if(board1[j][i]!="#"){
+                    board1[j][i]=alphabetkey1[used1];
+                    used1++;
+                }
+            }
+        }
+    }
+    else{
+        for(let i=0;i<5;i++){
+            for(let j=0;j<6;j++){
+                if(board1[i][j]!="#"){
+                    board1[i][j]=alphabetkey1[used1];
+                    used1++;
+                }
+            }
+        }
+    }
+    let rows1="012345";
+    rows1=rows1.replace(String(d1),"").replace(String(d2),"");
+    const coded=coded1+coded2;
+    let numbers=[];
+    let index;
+    for(let i=0;i<coded.length;i++){
+        index=board1.flat().indexOf(coded[i]);
+        if(Math.floor(index/6)==0){
+            numbers.push(index);
+        }
+        else{
+            numbers.push(Number(String(rows1[Math.floor(index/6)-1])+String(index%6)));
+        }
+    }
+    numbers=numbers.join("");
+    const d3=batteries%6;
+    const d4=lit%6;
+    if(d3==d4){
+        d4=(ports+1)%6;
+    }
+    const alphabetkey2=composekey(KW2,Number(bits[3]),1);
+    let board2=[["","","","","",""],["","","","","",""],["","","","","",""],["","","","","",""],["","","","","",""]];
+    for(let i=0;i<6;i++){
+        if(i!=d3 && i!=d4){
+            board2[0][i]="#";
+        }
+    }
+    let used2=0;
+    if(bits[2]=="1"){
+        for(let i=0;i<6;i++){
+            for(let j=0;j<5;j++){
+                if(board2[j][i]!="#"){
+                    board2[j][i]=alphabetkey2[used2];
+                    used2++;
+                }
+            }
+        }
+    }
+    else{
+        for(let i=0;i<5;i++){
+            for(let j=0;j<6;j++){
+                if(board2[i][j]!="#"){
+                    board2[i][j]=alphabetkey2[used2];
+                    used2++;
+                }
+            }
+        }
+    }
+    let rows2="012345";
+    rows2=rows2.replace(String(d3),"").replace(String(d4),"");
+    let KW3="";
+    while(numbers.length>1){
+        if(numbers[0]==d3||numbers[0]==d4){
+            KW3+=board2[0][Number(numbers[0])];
+            numbers=s(numbers,1);
+        }
+        else{
+            KW3+=board2[(rows2.indexOf(numbers[0])+1)][numbers[1]];
+            numbers=s(numbers,2);
+        }
+    }
+    let KW3cut=KW3.replace(/[q-z]/g,"");
+    let lettergrid=composekey(KW3cut,Number(bits[4]),1,letters.slice(0,16));
+    let KW3pos=[];
+    for(let i=0;i<8;i++){
+        KW3pos.push(letters.indexOf(KW3[i]));
+    }
+    let labels=[[0,0,0,0],[0,0,0,0]];
+    let earliest;
+    let earliestindex;
+    for(let i=0;i<2;i++){
+        for(let j=0;j<4;j++){
+            earliest=26;
+            for(let k=0;k<4;k++){
+                if(KW3pos[i*4+k]<earliest){
+                    earliest=KW3pos[i*4+k];
+                    earliestindex=k;
+                }
+            }
+            KW3pos[i*4+earliestindex]=26;
+            labels[1-i][earliestindex]=String(j);
+        }
+    }
+    let binary;
+    let braillelist=[[],[]];
+    let coords;
+    encrypted+=mixed.slice(0,3);
+    for(let i=0;i<9;i++){
+        coords=String(Math.floor(lettergrid.indexOf(encrypted[i])/4))+String(lettergrid.indexOf(encrypted[i])%4);
+        binary=(labels[0].indexOf(coords[0])*4+labels[1].indexOf(coords[1])).toString(2);
+        while(binary.length<4){
+            binary="0"+binary;
+        }
+        binary=binary.split("").reverse().join("");
+        for(let j=0;j<2;j++){
+            braillelist[j].push(binary[j]+binary[j+2]);
+        }
+    }
+    for(let i=0;i<2;i++){
+        braillelist[i]=braillelist[i].join("");
+    }
+    let braillecurrent="";
+    for(let i=0;i<6;i++){
+        for(let j=0;j<2;j++){
+            for(let k=0;k<3;k++){
+                braillecurrent+=braillelist[j][i*3+k]
+            }
+        }
+        encrypted+=letters[braille.indexOf(braillecurrent)];
+        braillecurrent="";
+    }
+    encrypted=s(encrypted,9);
+    const N=Number(mixed[4]);
+    let last;
+    let remaining=encrypted;
+    for(let i=0;i<6;i++){
+        remaining=shift(remaining,N%remaining.length);
+        encrypted+=letters[(letters.indexOf(remaining[0])+letters.indexOf(last)+1)%26];
+        last=encrypted[encrypted.length-1];
+        remaining=s(remaining,1);
     }
     encrypted=s(encrypted);
     return end(encrypted);
@@ -1328,6 +1516,8 @@ function solve(){
                 return brown(edgework,inputs);
             case "q":
                 return maroon(edgework,inputs);
+            case "l":
+                return cornflower(edgework,inputs);
         }
     }
     catch(error){
@@ -1410,13 +1600,17 @@ function changeMode(){
     }
 }
 function recreateEdgeworks(){
-    document.querySelectorAll(".edgework input").forEach(a=>{a.remove()});
+    document.querySelectorAll(".edgework *").forEach(a=>{a.remove()});
     for(let j=0;j<edgeworks[colors.indexOf(color)].length;j++){
         let newEw=document.createElement("input");
         newEw.id="ew"+String(j+1);
         newEw.autocomplete="off";
         newEw.placeholder=edgeworks[colors.indexOf(color)][j];
         document.querySelector(".edgework").appendChild(newEw);
+    }
+    if(edgeworks[colors.indexOf(color)].length==0){
+        let noEw=document.createElement("div");
+        document.querySelector(".edgework").appendChild(noEw);
     }
     document.querySelectorAll(".edgework input").forEach(a=>(a.addEventListener("input",()=>{
         if(a.value.length>lengths[colors.indexOf(color)][5+Number(a.id[2])]){
