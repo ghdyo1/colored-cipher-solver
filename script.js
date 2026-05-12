@@ -12,7 +12,9 @@ const digit_words=["zero","one","two","three","four","five","six","seven","eight
 const morselist=[".-","-...","-.-.","-..",".","..-.","--.","....","..",".---","-.-",".-..","--","-.","---",".--.","--.-",".-.","...","-","..-","...-",".--","-..-","-.--","--.."];
 const roman=["i","ii","iii","iv","v","vi","vii","viii"];
 const braille=["100000","110000","100100","100110","100010","110100","110110","110010","010100","010110","101000","111000","101100","101110","101010","111100","111110","111010","011100","011110","101001","111001","010111","101101","101111","101011"];
+const semaphore=["45","46","47","04","14","24","34","56","57","02","05","15","25","35","67","06","16","26","36","07","17","03","12","13","27","23"];
 const digits="0123456789";
+
 const colors="roygbivwaknqlfsmce";
 const hex=["f00","f70","ff0","0f0","00f","217","a0f","fff","777","111","421","835","68f","282","900","f0f","f85","fe9"];
 const colorwords=[["Red","Orange","Yellow","Green","Blue","Indigo","Violet","White","Gray","Black"],["Brown","Maroon","Cornflower","Forest","Crimson","Magenta","Coral","Cream"]];
@@ -32,7 +34,8 @@ const edgeworks=[
     ["SN FIRST LETTER","SN LAST LETTER","SN SECOND CHARACTER"],
     ["SERIAL NUMBER"],
     [],
-    ["SN FIRST CHARACTER","NUMBER OF INDICATORS","NUMBER OF PORTS","NUMBER OF BATTERIES","NUMBER OF LIT INDICATORS"]//WIP
+    ["SN FIRST CHARACTER","NUMBER OF INDICATORS","NUMBER OF PORTS","NUMBER OF BATTERIES","NUMBER OF LIT INDICATORS"],
+    []
 ];
 const lengths=[
     [6,6,0,8,8,8,1,1,1],
@@ -47,7 +50,8 @@ const lengths=[
     [6,8,8,16,3,14,1,1,1],
     [6,6,6,6,6,6,6],
     [6,5,3,8,8,8,8,8,8],
-    [6,5,6,6,8,8,1,2,2]//WIP
+    [6,5,6,6,8,8,1,2,2],
+    [6,1,8,8,8,4]
 ];
 const allowed=[
     [letters,letters,"",letters,letters,letters,digits,digits,digits],
@@ -62,11 +66,14 @@ const allowed=[
     [letters,letters,letters,"abcvi-",letters,letters+"-",letters,letters,digits+letters],
     [letters,letters,letters,digits,digits,letters,digits+letters],
     [letters,digits.slice(1,6),letters,letters,letters,letters,letters,letters,letters],
-    [letters,digits+letters+" ",letters,letters,letters,letters,digits+letters,digits,digits]//WIP
+    [letters,digits+letters+" ",letters,letters,letters,letters,digits+letters,digits,digits,digits,digits],
+    [letters,digits,letters,letters,letters,letters]
 ];
 const pages=[2,2,2,2,2,2,2,2,2,2,2,3,2,2,3,1,2,4];
 
-function mod(a,b){return ((a%b)+b)%b;}
+function mod(a,b){
+    return ((a%b)+b)%b;
+}
 function step(a,b){
     let r="";
     for(let i=0;i<a.slice(b).length;i+=2){
@@ -99,10 +106,40 @@ function composekey(placeholderword,edgeworkEL,parity,alphabet=letters){
     }
     return placeholder;
 }
+function rotate(cube,direction){
+    let newcube=structuredClone(cube);
+    function cycle(coords){
+        for(let i=0;i<8;i++){
+            newcube[Number(coords[(i+1)*3%24+2])][Number(coords[(i+1)*3%24+1])][Number(coords[(i+1)*3%24])]=cube[Number(coords[i*3+2])][Number(coords[i*3+1])][Number(coords[i*3])];
+        }
+    }
+    switch(direction){
+        case "U":
+            cycle("002012022122222212202102");
+            break;
+        case "F":
+            cycle("000001002102202201200100");
+            break;
+        case "R":
+            cycle("200201202212222221220210");
+            break;
+        case "B":
+            cycle("020120220221222122022021");
+            break;
+        case "L":
+            cycle("000010020021022012002001");
+            break;
+        case "D":
+            cycle("000100200210220120020010");
+            break;
+    }
+    return newcube;
+}
 function s(encrypted,from=6){
     return encrypted.slice(from);
 }
 function shift(text,index){
+    index%=text.length;
     return text.slice(index)+text.slice(0,index);
 }
 function end(encrypted){
@@ -114,7 +151,7 @@ function end(encrypted){
     }
 }
 
-function red(edgework, inputs){
+function red(edgework,inputs){
     let firstdigit=Number(edgework[0]);
     let seconddigit=Number(edgework[1]);
     let lastdigit=Number(edgework[2]);
@@ -260,7 +297,7 @@ function red(edgework, inputs){
     encrypted=s(encrypted);
     return end(encrypted);
 }
-function orange(edgework, inputs){
+function orange(edgework,inputs){
     let firstdigit=Number(edgework[0]);
     let seconddigit=Number(edgework[1]);
     let lastdigit=Number(edgework[2]);
@@ -417,7 +454,7 @@ function orange(edgework, inputs){
     encrypted=s(encrypted);
     return end(encrypted);
 }
-function yellow(edgework, inputs){
+function yellow(edgework,inputs){
     let batteries=Number(edgework[0]);
     let encrypted=inputs[0];
     let number1=inputs[1];
@@ -516,7 +553,7 @@ function yellow(edgework, inputs){
     encrypted=s(encrypted);
     return end(encrypted);
 }
-function green(edgework, inputs){
+function green(edgework,inputs){
     let unlit=Number(edgework[0]);
     let encrypted=inputs[0];
     let homotens=inputs[1];
@@ -563,7 +600,7 @@ function green(edgework, inputs){
     encrypted=s(encrypted);
     return end(encrypted);
 }
-function blue(edgework, inputs){
+function blue(edgework,inputs){
     let indicators=Number(edgework[0]);
     let encrypted=inputs[0];
     let tridigitalrows=inputs[1];
@@ -585,7 +622,7 @@ function blue(edgework, inputs){
     encrypted=s(encrypted);
     return end(encrypted);
 }
-function indigo(edgework, inputs){
+function indigo(edgework,inputs){
     let ports=Number(edgework[0]);
     let offset=Number(edgework[1]);
     let encrypted=inputs[0];
@@ -820,7 +857,7 @@ function indigo(edgework, inputs){
     encrypted=s(encrypted);
     return end(encrypted);
 }
-function violet(edgework, inputs){
+function violet(edgework,inputs){
     let encrypted=inputs[0];
     let key=inputs[1];
     let number=inputs[2];
@@ -851,7 +888,7 @@ function violet(edgework, inputs){
     encrypted=s(encrypted);
     return end(encrypted);
 }
-function white(edgework, inputs){
+function white(edgework,inputs){
     let ports=Number(edgework[0]);
     let lit=Number(edgework[1]);
     let secondletter=edgework[2];
@@ -908,7 +945,7 @@ function white(edgework, inputs){
     encrypted=s(encrypted);
     return end(encrypted);
 }
-function gray(edgework, inputs){
+function gray(edgework,inputs){
     let firstchar=edgework[0];
     let encrypted=inputs[0];
     let invert=inputs[1];
@@ -1013,7 +1050,7 @@ function gray(edgework, inputs){
     encrypted=s(encrypted);
     return end(encrypted);
 }
-function black(edgework, inputs){
+function black(edgework,inputs){
     let firstletter=edgework[0];
     let lastletter=edgework[1];
     let secondchar=edgework[2];
@@ -1160,7 +1197,7 @@ function black(edgework, inputs){
     encrypted=s(encrypted);
     return end(encrypted);
 }
-function brown(edgework, inputs){
+function brown(edgework,inputs){
     const diary=text;
     let SN=edgework[0];
     let encrypted=inputs[0];
@@ -1216,7 +1253,7 @@ function brown(edgework, inputs){
     encrypted=s(encrypted);
     return end(encrypted);
 }
-function maroon(edgework, inputs){
+function maroon(edgework,inputs){
     let encrypted=inputs[0];
     let number=inputs[1];
     let key=inputs[2];
@@ -1296,7 +1333,7 @@ function maroon(edgework, inputs){
     encrypted=s(encrypted);
     return end(encrypted);
 }
-function cornflower(edgework, inputs){
+function cornflower(edgework,inputs){
     let digit36=edgework[0];
     let indicators=edgework[1];
     let ports=edgework[2];
@@ -1475,6 +1512,109 @@ function cornflower(edgework, inputs){
     encrypted=s(encrypted);
     return end(encrypted);
 }
+function forest(edgework,inputs){
+    let firstdigit=Number(edgework[0]);
+    let encrypted=inputs[0];
+    let number=Number(inputs[1]);
+    let keyword=inputs[2];
+    let semaphorekw=inputs[3];
+    let KW1=inputs[4];
+    let KW2=inputs[5];
+
+    if(keyword.length<6){
+        keyword+=keyword;
+    }
+    for(let i=0;i<6;i++){
+        number*=26;
+        number+=(letters.indexOf(encrypted[i])+1)%26;
+    }
+    number=number.toString(2);
+    while(number.length<30){
+        number="0"+number;
+    }
+    for(let i=0;i<6;i++){
+        number=shift(number,number.length-letters.indexOf(keyword[i])-1);
+        encrypted+=letters[parseInt(number.slice(-5),2)-1];
+        number=number.slice(0,-5);
+    }
+    encrypted=s(encrypted);
+    let current;
+    for(let i=0;i<6;i++){
+        current=semaphore[letters.indexOf(encrypted[i])].split("");
+        for(let j=0;j<2;j++){
+            current[j]=Number(current[j]);
+        }
+        for(let j=0;j<2;j++){
+            current[j]-=letters.indexOf(semaphorekw[i])%8+1;
+            current[j]=mod(current[j],8);
+        }
+        if(current[0]>current[1]){
+            current.reverse();
+        }
+        for(let j=0;j<2;j++){
+            current[j]=String(current[j]);
+        }
+        current=current.join("");
+        encrypted+=letters[semaphore.indexOf(current)];
+    }
+    encrypted=s(encrypted);
+    let alphabetkey=composekey(KW1,0,0)+" ";
+    let cubeabc=[[["g","h","i"],["o","p","q"],["x","y","z"]],
+                 [["d","e","f"],["m"," ","n"],["u","v","w"]],
+                 [["a","b","c"],["j","k","l"],["r","s","t"]]];
+    let cubekey=[[[" "," "," "],[" "," "," "],[" "," "," "]],
+                 [[" "," "," "],[" "," "," "],[" "," "," "]],
+                 [[" "," "," "],[" "," "," "],[" "," "," "]]];
+    for(let x=0;x<3;x++){
+        for(let y=0;y<3;y++){
+            for(let z=0;z<3;z++){
+                cubekey[[2,1,1,1,1,0,2,2,2,1,1,0,0,0,2,2,0,0,2,2,2,1,1,0,0,0,1][x*9+y*3+z]][[1,0,1,2,1,1,0,0,0,0,0,0,0,0,1,1,1,1,2,2,2,2,2,2,2,2,1][x*9+y*3+z]][[1,1,2,1,0,1,0,1,2,0,2,0,1,2,0,2,0,2,0,1,2,0,2,0,1,2,1][x*9+y*3+z]]=alphabetkey[x*9+y*3+z];
+            }
+        }
+    }
+    let cycles;
+    let turn;
+    for(let i=0;i<KW2.length;i++){
+        if("aeimquy".includes(KW2[i])){
+            cycles=1;
+        }
+        if("bfjnrvz".includes(KW2[i])){
+            cycles=3;
+        }
+        if("cgkosw".includes(KW2[i])){
+            cycles=5;
+        }
+        if("dhlptx".includes(KW2[i])){
+            cycles=7;
+        }
+        if("abcdy".includes(KW2[i])){
+            turn="U";
+        }
+        if("efghz".includes(KW2[i])){
+            turn="F";
+        }
+        if("ijkl".includes(KW2[i])){
+            turn="R";
+        }
+        if("mnop".includes(KW2[i])){
+            turn="B";
+        }
+        if("qrst".includes(KW2[i])){
+            turn="L";
+        }
+        if("uvwx".includes(KW2[i])){
+            turn="D";
+        }
+        for(let j=0;j<cycles;j++){
+            cubekey=rotate(cubekey,turn);
+        }
+    }
+    for(let i=0;i<6;i++){
+        encrypted+=cubeabc.flat(2)[cubekey.flat(2).indexOf(encrypted[i])];
+    }
+    encrypted=s(encrypted);
+    return end(encrypted);
+}
 
 function solve(){
     let inputs=[];
@@ -1518,6 +1658,16 @@ function solve(){
                 return maroon(edgework,inputs);
             case "l":
                 return cornflower(edgework,inputs);
+            case "f":
+                return forest(edgework,inpust);
+            // case "s":
+            //     return crimson(edgework,inputs);
+            // case "m":
+            //     return magenta(edgework,inputs);
+            // case "c":
+            //     return coral(edgework,inputs);
+            // case "e":
+            //     return cream(edgework,inputs);
         }
     }
     catch(error){

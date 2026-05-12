@@ -1,4 +1,4 @@
-function /*color*/a(edgework, inputs){
+function color(edgework,inputs){
     let firstdigit=Number(edgework[0]);
     let encrypted=inputs[0];
 
