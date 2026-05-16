@@ -35,6 +35,7 @@ const edgeworks=[
     ["SERIAL NUMBER"],
     [],
     ["SN FIRST CHARACTER","NUMBER OF INDICATORS","NUMBER OF PORTS","NUMBER OF BATTERIES","NUMBER OF LIT INDICATORS"],
+    [],
     []
 ];
 const lengths=[
@@ -51,7 +52,8 @@ const lengths=[
     [6,6,6,6,6,6,6],
     [6,5,3,8,8,8,8,8,8],
     [6,5,6,6,8,8,1,2,2],
-    [6,1,8,8,8,4]
+    [6,1,8,8,8,4],
+    [6,8,5,8,8,5,5,5,0]
 ];
 const allowed=[
     [letters,letters,"",letters,letters,letters,digits,digits,digits],
@@ -67,7 +69,8 @@ const allowed=[
     [letters,letters,letters,digits,digits,letters,digits+letters],
     [letters,digits.slice(1,6),letters,letters,letters,letters,letters,letters,letters],
     [letters,digits+letters+" ",letters,letters,letters,letters,digits+letters,digits,digits,digits,digits],
-    [letters,digits,letters,letters,letters,letters]
+    [letters,digits,letters,letters,letters,letters],
+    [letters,letters,letters,letters,letters,letters,letters,letters,""]
 ];
 const pages=[2,2,2,2,2,2,2,2,2,2,2,3,2,2,3,1,2,4];
 
@@ -86,7 +89,7 @@ function rotor(rot,row,lett,con){
     lett=con[rot][(row+1)%2].toLowerCase().indexOf(lett);
     return lett;
 }
-function composekey(placeholderword,edgeworkEL,parity,alphabet=letters){
+function composekey(placeholderword,edgeworkEL=0,parity=0,alphabet=letters){
     let placeholderkey="";
     for(let i=0;i<placeholderword.length;i++){
         if(!placeholderkey.includes(placeholderword[i])){
@@ -138,9 +141,39 @@ function rotate(cube,direction){
 function s(encrypted,from=6){
     return encrypted.slice(from);
 }
-function shift(text,index){
+function shift(text,index,except=""){
+    let array=[];
+    for(let i=0;i<text.length;i++){
+        array.push("#");
+        for(let j=0;j<except.length;j++){
+            if(text[i]==except[j]){
+                array[i]=except[j];
+            }
+        }
+    }
+    for(let i=0;i<except.length;i++){
+        text=text.replaceAll(except[i],"");
+    }
     index%=text.length;
-    return text.slice(index)+text.slice(0,index);
+    text=text.slice(index)+text.slice(0,index);
+    let final="";
+    let used=0;
+    for(let i=0;i<array.length;i++){
+        if(array[i]=="#"){
+            final+=text[used];
+            used++;
+        }
+        else{
+            final+=array[i];
+        }
+    }
+    return final;
+}
+function prepend(text,length,symbol="0"){
+    while(text.length<length){
+        text="0"+text;
+    }
+    return text;
 }
 function end(encrypted){
     if(encrypted.length!=6){
@@ -194,12 +227,7 @@ function red(edgework,inputs){
     else{
         matrix1=matrix1_abc+key1;
     }
-    let letter1;
-    let letter2;
-    let row1;
-    let row2;
-    let col1;
-    let col2;
+    let letter1,letter2,row1,row2,col1,col2;
     for(let i=0;i<3;i++){
         letter1=matrix1.indexOf(encrypted[i*2]);
         letter2=matrix1.indexOf(encrypted[i*2+1]);
@@ -343,10 +371,7 @@ function orange(edgework,inputs){
     }
     const string=string1+string2;
     let keyword="";
-    let letter1;
-    let letter2;
-    let row;
-    let col;
+    let letter1,letter2,row,col;
     for(let i=0;i<string.length/2;i++){
         letter1=matrix1.indexOf(string[i*2]);
         letter2=matrix1.indexOf(string[i*2+1]);
@@ -427,12 +452,7 @@ function orange(edgework,inputs){
     else{
         matrix4=matrix4_abc+key4;
     }
-    let l1;
-    let l2;
-    let r1;
-    let r2;
-    let c1;
-    let c2;
+    let l1,l2,r1,r2,c1,c2;
     for(let i=0;i<3;i++){
         l1=matrix2.indexOf(encrypted[i*2]);
         l2=matrix3.indexOf(encrypted[i*2+1]);
@@ -543,8 +563,7 @@ function yellow(edgework,inputs){
     for(let i=0;i<4;i++){
         finalnumbers[i]=mod(finalnumbers[i]*N,26);
     }
-    let letter1;
-    let letter2;
+    let letter1,letter2;
     for(let i=0;i<3;i++){
         letter1=letters.indexOf(encrypted[i*2])+1;
         letter2=letters.indexOf(encrypted[i*2+1])+1;
@@ -691,14 +710,10 @@ function indigo(edgework,inputs){
         }
     }
     for(let i=0;i<3;i++){
-        while(binary[i].length!=6){
-            binary[i]="0"+binary[i];
-        }
+        binary[i]=prepend(binary[i],6);
     }
     let gates=["and","or","xor","nand","nor","xnor","rimp","limp"];
-    let lb;
-    let rb;
-    let res;
+    let lb,rb,res;
     for(let i=0;i<6;i++){
         lb=binary[0][i];
         rb=binary[1][i];
@@ -735,13 +750,10 @@ function indigo(edgework,inputs){
         }
     }
     let answer="";
-    let a;
-    let b;
+    let a,b;
     for(let i=0;i<6;i++){
         a=letters.indexOf(encrypted[i]).toString(2);
-        while(a.length!=5){
-            a="0"+a;
-        }
+        a=prepend(a,5);
         while(topbinary.length!=6){
             topbinary+="0";
         }
@@ -757,9 +769,7 @@ function indigo(edgework,inputs){
             a=s(a,5);
         }
         b=letters.indexOf(key[i]).toString(2);
-        while(b.length!=5){
-            b="0"+b;
-        }
+        b=prepend(b,5);
         while(bottombinary.length!=6){
             bottombinary+="0";
         }
@@ -881,7 +891,7 @@ function violet(edgework,inputs){
         encrypted+=encrypted[Number(grid[i])];
     }
     encrypted=s(encrypted);
-    let quagmire=composekey(quagmireword,0,0);
+    let quagmire=composekey(quagmireword);
     for(let i=0;i<6;i++){
         encrypted+=letters[shift(quagmire,quagmire.indexOf(key[i])).indexOf(encrypted[i])];
     }
@@ -953,13 +963,10 @@ function gray(edgework,inputs){
     let key=inputs[3];
 
     const scrambler=["21453","21534","31524","31452","41523","41532","51234","51423","51432","23154","25134","24153","34152","35124","45123","45132","54123","54132","24513","25413","34512","35214","35412","43512","45213","53412","54213","24531","25431","34521","35421","43251","43521","45231","53421","54231"][(digits+letters).indexOf(firstchar)];
-    let binary;
-    let letter;
+    let binary,letter;
     for(let i=0;i<6;i++){
         binary=(letters.indexOf(encrypted[i])+1).toString(2);
-        while(binary.length!=5){
-            binary="0"+binary;
-        }
+        binary=prepend(binary,5);
         if(invert[i]=="1"){
             for(let j=0;j<5;j++){
                 if(binary[j]=="0"){
@@ -1018,11 +1025,7 @@ function gray(edgework,inputs){
     }
     encrypted=s(encrypted);
     const fixed=(letters.slice(13)+letters.slice(13)).slice(0,-1)+(step(letters,0)+step(letters,0)).slice(0,-1)+(step(letters,1)+step(letters,1)).slice(0,-1);
-    let string;
-    let col1;
-    let col2;
-    let e;
-    let f;
+    let string,col1,col2,e,f;
     for(let i=0;i<3;i++){
         string=letters.slice(0,13);
         for(let j=0;j<3;j++){
@@ -1088,8 +1091,7 @@ function black(edgework,inputs){
         }
     }
     numbers=s(numbers,9);
-    let row1;
-    let row2;
+    let row1,row2;
     for(let i=0;i<3;i++){
         for(let j=0;j<3;j++){
             if(rows[0][j].includes(numbers[i*3+1])){
@@ -1456,8 +1458,7 @@ function cornflower(edgework,inputs){
         KW3pos.push(letters.indexOf(KW3[i]));
     }
     let labels=[[0,0,0,0],[0,0,0,0]];
-    let earliest;
-    let earliestindex;
+    let earliest,earliestindex;
     for(let i=0;i<2;i++){
         for(let j=0;j<4;j++){
             earliest=26;
@@ -1471,16 +1472,13 @@ function cornflower(edgework,inputs){
             labels[1-i][earliestindex]=String(j);
         }
     }
-    let binary;
+    let binary,coords;
     let braillelist=[[],[]];
-    let coords;
     encrypted+=mixed.slice(0,3);
     for(let i=0;i<9;i++){
         coords=String(Math.floor(lettergrid.indexOf(encrypted[i])/4))+String(lettergrid.indexOf(encrypted[i])%4);
         binary=(labels[0].indexOf(coords[0])*4+labels[1].indexOf(coords[1])).toString(2);
-        while(binary.length<4){
-            binary="0"+binary;
-        }
+        binary=prepend(binary,4);
         binary=binary.split("").reverse().join("");
         for(let j=0;j<2;j++){
             braillelist[j].push(binary[j]+binary[j+2]);
@@ -1513,7 +1511,6 @@ function cornflower(edgework,inputs){
     return end(encrypted);
 }
 function forest(edgework,inputs){
-    let firstdigit=Number(edgework[0]);
     let encrypted=inputs[0];
     let number=Number(inputs[1]);
     let keyword=inputs[2];
@@ -1529,9 +1526,7 @@ function forest(edgework,inputs){
         number+=(letters.indexOf(encrypted[i])+1)%26;
     }
     number=number.toString(2);
-    while(number.length<30){
-        number="0"+number;
-    }
+    number=prepend(number,30);
     for(let i=0;i<6;i++){
         number=shift(number,number.length-letters.indexOf(keyword[i])-1);
         encrypted+=letters[parseInt(number.slice(-5),2)-1];
@@ -1558,7 +1553,7 @@ function forest(edgework,inputs){
         encrypted+=letters[semaphore.indexOf(current)];
     }
     encrypted=s(encrypted);
-    let alphabetkey=composekey(KW1,0,0)+" ";
+    let alphabetkey=composekey(KW1)+" ";
     let cubeabc=[[["g","h","i"],["o","p","q"],["x","y","z"]],
                  [["d","e","f"],["m"," ","n"],["u","v","w"]],
                  [["a","b","c"],["j","k","l"],["r","s","t"]]];
@@ -1572,8 +1567,7 @@ function forest(edgework,inputs){
             }
         }
     }
-    let cycles;
-    let turn;
+    let cycles,turn;
     for(let i=0;i<KW2.length;i++){
         if("aeimquy".includes(KW2[i])){
             cycles=1;
@@ -1613,6 +1607,122 @@ function forest(edgework,inputs){
         encrypted+=cubeabc.flat(2)[cubekey.flat(2).indexOf(encrypted[i])];
     }
     encrypted=s(encrypted);
+    return end(encrypted);
+}
+function crimson(edgework,inputs){
+    let encrypted=inputs[0];
+    let keyfrac=inputs[1];
+    let keytrans=inputs[2];
+    let KW1=inputs[3];
+    let KW2=inputs[4];
+    let KW3=inputs[5];
+    let keyword1=inputs[6];
+    let keyword2=inputs[7];
+
+    let polybius=composekey(keyfrac);
+    polybius=polybius.slice(0,13)+"##"+polybius.slice(13)+"##";
+    let coords="";
+    let index;
+    for(let i=0;i<6;i++){
+        index=polybius.indexOf(encrypted[i]);
+        coords+=(String(Math.floor(index/15))+String(Math.floor(index%15/5))+String(index%5));
+    }
+    for(let i=0;i<3;i++){
+        for(let j=0;j<6;j++){
+            coords+=coords[j*3+i];
+        }
+    }
+    coords=s(coords,18);
+    coords=[coords.slice(0,6),coords.slice(6,12),coords.slice(12)];
+    let row,col,col2;
+    for(let i=0;i<keytrans.length;i++){
+        row=Math.floor(polybius.indexOf(keytrans[i])%15/5);
+        col=polybius.indexOf(keytrans[i])%5;
+        if(i%2==0){
+            coords[row]=shift(coords[row],col+1,["","2","34"][row]);
+        }
+        else{
+            col2=(col+row+1)%6;
+            for(let j=0;j<3;j++){
+                for(let k=0;k<6;k++){
+                    switch(k){
+                        case col:
+                            coords[j]+=coords[j][col2];
+                            break;
+                        case col2:
+                            coords[j]+=coords[j][col];
+                            break;
+                        default:
+                            coords[j]+=coords[j][k];
+                            break;
+                    }
+                }
+                coords[j]=s(coords[j]);
+            }
+        }
+    }
+    for(let i=0;i<6;i++){
+        encrypted+=polybius[Number(coords[0][i])*15+Number(coords[1][i])*5+Number(coords[2][i])];
+    }
+    encrypted=s(encrypted);
+    let top=composekey(KW1);
+    top=top.slice(0,13)+" "+top.slice(13);
+    let bot=composekey(KW2);
+    bot=bot.slice(0,13)+" "+bot.slice(13);
+    let ternary,index1,index2,r1,r2,c1,c2,rowfull,colfull;
+    for(let i=0;i<6;i++){
+        inter1=bot[top.indexOf(encrypted[i])];
+        inter2=bot[top.indexOf(inter1)];
+        index1=top.indexOf(encrypted[i]);
+        index2=top.indexOf(bot[top.indexOf(inter1)]);
+        r1=Math.floor(index1/9);
+        r2=Math.floor(index2/9);
+        c1=index1%9;
+        c2=index2%9;
+        encrypted+=bot[top.indexOf(inter2)];
+        ternary=(letters.indexOf(KW3[i%6])+1).toString(3);
+        ternary=prepend(ternary,3);
+        if(i%2==0){
+            rowfull=bot.slice(r1*9,(r1+1)*9);
+            bot=bot.slice(0,r1*9)+shift(rowfull,parseInt(ternary.slice(0,2),3)," ")+bot.slice((r1+1)*9);
+            colfull=top[c2]+top[c2+9]+top[c2+18];
+            for(let i=0;i<27;i++){
+                if(i%9==c2){
+                    top+=shift(colfull,3-Number(ternary[2])," ")[Math.floor(i/9)];
+                }
+                else{
+                    top+=top[i];
+                }
+            }
+            top=s(top,27);
+        }
+        else{
+            rowfull=top.slice(r2*9,(r2+1)*9);
+            top=top.slice(0,r2*9)+shift(rowfull,parseInt(ternary.slice(1),3)," ")+top.slice((r2+1)*9);
+            colfull=bot[c1]+bot[c1+9]+bot[c1+18];
+            for(let i=0;i<27;i++){
+                if(i%9==c1){
+                    bot+=shift(colfull,3-Number(ternary[0])," ")[Math.floor(i/9)];
+                }
+                else{
+                    bot+=bot[i];
+                }
+            }
+            bot=s(bot,27);
+        }
+    }
+    encrypted=s(encrypted);
+    let parts,pivot,newpart;
+    for(let i=0;i<5;i++){
+        pivot=(letters.indexOf(keyword1[i])+1)%5+1;
+        parts=[encrypted.slice(pivot),encrypted.slice(0,pivot)];
+        newpart="";
+        for(let j=0;j<parts[0].length;j++){
+            newpart+=letters[(letters.indexOf(parts[0][j])+letters.indexOf(keyword2[i])+1)%26];
+        }
+        parts[0]=newpart;
+        encrypted=parts.join("");
+    }
     return end(encrypted);
 }
 
@@ -1660,8 +1770,8 @@ function solve(){
                 return cornflower(edgework,inputs);
             case "f":
                 return forest(edgework,inpust);
-            // case "s":
-            //     return crimson(edgework,inputs);
+            case "s":
+                return crimson(edgework,inputs);
             // case "m":
             //     return magenta(edgework,inputs);
             // case "c":
