@@ -36,7 +36,8 @@ const edgeworks=[
     [],
     ["SN FIRST CHARACTER","NUMBER OF INDICATORS","NUMBER OF PORTS","NUMBER OF BATTERIES","NUMBER OF LIT INDICATORS"],
     [],
-    []
+    [],
+    ["SERIAL NUMBER"]//WIP
 ];
 const lengths=[
     [6,6,0,8,8,8,1,1,1],
@@ -53,7 +54,8 @@ const lengths=[
     [6,5,3,8,8,8,8,8,8],
     [6,5,6,6,8,8,1,2,2],
     [6,1,8,8,8,4],
-    [6,8,5,8,8,5,5,5,0]
+    [6,8,5,8,8,5,5,5,0],
+    [6,2,3,6]//WIP
 ];
 const allowed=[
     [letters,letters,"",letters,letters,letters,digits,digits,digits],
@@ -70,7 +72,8 @@ const allowed=[
     [letters,digits.slice(1,6),letters,letters,letters,letters,letters,letters,letters],
     [letters,digits+letters+" ",letters,letters,letters,letters,digits+letters,digits,digits,digits,digits],
     [letters,digits,letters,letters,letters,letters],
-    [letters,letters,letters,letters,letters,letters,letters,letters,""]
+    [letters,letters,letters,letters,letters,letters,letters,letters,""],
+    [letters,digits,letters,digits+letters]//WIP
 ];
 const pages=[2,2,2,2,2,2,2,2,2,2,2,3,2,2,3,1,2,4];
 
@@ -911,8 +914,7 @@ function white(edgework,inputs){
     for(let i=0;i<6;i++){
         base+=letters.indexOf(encrypted[i])+1;
     }
-    base%=8;
-    base+=2;
+    base=base%8+2;
     let number=parseInt(numberbased,base);
     for(let i=0;i<6;i++){
         encrypted+=letters[(letters.indexOf(encrypted[i])+number)%26];
@@ -1110,8 +1112,7 @@ function black(edgework,inputs){
     else{
         secondchar=letters.indexOf(secondchar)+10;
     }
-    secondchar%=4;
-    secondchar+=2;
+    secondchar=secondchar%4+2;
     let rs=[];
     for(let i=0;i<secondchar;i++){
         rs.push([]);
@@ -1225,8 +1226,7 @@ function brown(edgework,inputs){
             column+=Number(SN[i]);
         }
     }
-    column%=25;
-    column=26-column;
+    column=26-column%25;
     for(let i=0;i<6;i++){
         row=rowslist.slice(letters.indexOf(key[i])*26,(letters.indexOf(key[i])+1)*26);
         row=shift(row,row.indexOf(encrypted[i]));
@@ -1725,6 +1725,78 @@ function crimson(edgework,inputs){
     }
     return end(encrypted);
 }
+function magenta(edgework,inputs){
+    let sn=edgework[0];
+    let encrypted=inputs[0];
+    let number=Number(inputs[1]);
+    let key=inputs[2];
+
+    let sum=0;
+    let snlett="";
+    for(let i=0;i<6;i++){
+        if(digits.indexOf(sn[i])!=-1){
+            sum+=Number(sn[i]);
+        }
+        else{
+            snlett+=sn[i];
+        }
+    }
+    sum=sum%25+1;
+    let inverse;
+    for(let i=0;i<26;i++){
+        if(i*number%26==1){
+            inverse=i;
+        }
+    }
+    for(let i=0;i<6;i++){
+        encrypted+=letters[mod(((letters.indexOf(encrypted[i])+1-sum)*inverse-1),26)];
+    }
+    encrypted=s(encrypted);
+    let earliest;
+    let used=0;
+    let grid=[];
+    for(let i=0;i<snlett.length;i++){
+        earliest=26;
+        for(let j=0;j<snlett.length;j++){
+            if(letters.indexOf(snlett[j])!=-1 && letters.indexOf(snlett[j])<earliest){
+                earliest=letters.indexOf(snlett[j]);
+            }
+        }
+        if(letters.indexOf(snlett[i])!=-1){
+            used++;
+        }
+        snlett=snlett.replaceAll(letters[earliest],String(used-1));
+        grid.push([]);
+    }
+    for(let i=0;i<6;i++){
+        grid[i%grid.length].push("");
+    }
+    let usedl=0;
+    for(let i=0;i<used;i++){
+        for(let j=0;j<6;j++){
+            if(snlett[j%grid.length]==i){
+                grid[j%grid.length][Math.floor(j/grid.length)]=encrypted[usedl];
+                usedl++;
+            }
+        }
+    }
+    for(let i=0;i<Math.max(...grid.map(a=>a.length));i++){
+        for(let j=0;j<grid.length;j++){
+            if(grid[j][i]!=undefined){
+                encrypted+=grid[j][i];
+            }
+        }
+    }
+    encrypted=s(encrypted);
+    let letter;
+    for(let i=0;i<6;i++){
+        letter=letters[mod(letters.indexOf(encrypted[i])-letters.indexOf(key[i])-1,26)];
+        key+=letter;
+        encrypted+=letter;
+    }
+    encrypted=s(encrypted);
+    return end(encrypted);
+}
 
 function solve(){
     let inputs=[];
@@ -1769,11 +1841,11 @@ function solve(){
             case "l":
                 return cornflower(edgework,inputs);
             case "f":
-                return forest(edgework,inpust);
+                return forest(edgework,inputs);
             case "s":
                 return crimson(edgework,inputs);
-            // case "m":
-            //     return magenta(edgework,inputs);
+            case "m":
+                return magenta(edgework,inputs);
             // case "c":
             //     return coral(edgework,inputs);
             // case "e":
