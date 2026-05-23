@@ -37,7 +37,8 @@ const edgeworks=[
     ["SN FIRST CHARACTER","NUMBER OF INDICATORS","NUMBER OF PORTS","NUMBER OF BATTERIES","NUMBER OF LIT INDICATORS"],
     [],
     [],
-    ["SERIAL NUMBER"]//WIP
+    ["SERIAL NUMBER"],
+    ["NUMBER OF PORTS"]//WIP
 ];
 const lengths=[
     [6,6,0,8,8,8,1,1,1],
@@ -55,7 +56,8 @@ const lengths=[
     [6,5,6,6,8,8,1,2,2],
     [6,1,8,8,8,4],
     [6,8,5,8,8,5,5,5,0],
-    [6,2,3,6]//WIP
+    [6,2,3,6],
+    [6,8,4,8,0,0,2]//WIP
 ];
 const allowed=[
     [letters,letters,"",letters,letters,letters,digits,digits,digits],
@@ -73,7 +75,8 @@ const allowed=[
     [letters,digits+letters+" ",letters,letters,letters,letters,digits+letters,digits,digits,digits,digits],
     [letters,digits,letters,letters,letters,letters],
     [letters,letters,letters,letters,letters,letters,letters,letters,""],
-    [letters,digits,letters,digits+letters]//WIP
+    [letters,digits,letters,digits+letters],
+    [letters,letters,digits.slice(1,5),letters,"","",digits]//WIP
 ];
 const pages=[2,2,2,2,2,2,2,2,2,2,2,3,2,2,3,1,2,4];
 
@@ -1797,6 +1800,14 @@ function magenta(edgework,inputs){
     encrypted=s(encrypted);
     return end(encrypted);
 }
+function coral(edgework,inputs){
+    let ports=Number(edgework[0]);
+    let encrypted=inputs[0];
+
+    //code
+    encrypted=s(encrypted);
+    return end(encrypted);
+}
 
 function solve(){
     let inputs=[];
@@ -1846,8 +1857,8 @@ function solve(){
                 return crimson(edgework,inputs);
             case "m":
                 return magenta(edgework,inputs);
-            // case "c":
-            //     return coral(edgework,inputs);
+            case "c":
+                return coral(edgework,inputs);
             // case "e":
             //     return cream(edgework,inputs);
         }
