@@ -38,7 +38,7 @@ const edgeworks=[
     [],
     [],
     ["SERIAL NUMBER"],
-    ["NUMBER OF PORTS"]//WIP
+    ["NUMBER OF PORTS","SN FIRST CHATACTER","SN FOURTH CHARACTER"]
 ];
 const lengths=[
     [6,6,0,8,8,8,1,1,1],
@@ -57,7 +57,7 @@ const lengths=[
     [6,1,8,8,8,4],
     [6,8,5,8,8,5,5,5,0],
     [6,2,3,6],
-    [6,8,4,8,0,0,2]//WIP
+    [6,8,4,8,0,0,2,1,1]
 ];
 const allowed=[
     [letters,letters,"",letters,letters,letters,digits,digits,digits],
@@ -76,7 +76,7 @@ const allowed=[
     [letters,digits,letters,letters,letters,letters],
     [letters,letters,letters,letters,letters,letters,letters,letters,""],
     [letters,digits,letters,digits+letters],
-    [letters,letters,digits.slice(1,5),letters,"","",digits]//WIP
+    [letters,letters,digits.slice(1,5),letters,"","",digits,digits+letters,letters]
 ];
 const pages=[2,2,2,2,2,2,2,2,2,2,2,3,2,2,3,1,2,4];
 
@@ -1802,9 +1802,31 @@ function magenta(edgework,inputs){
 }
 function coral(edgework,inputs){
     let ports=Number(edgework[0]);
+    let sn1=edgework[1];
+    let sn4=edgework[2];
     let encrypted=inputs[0];
+    let prissyword=inputs[1];
 
-    //code
+    let prissy=composekey(prissyword,ports,1);
+    prissy=[prissy.slice(0,13),prissy.slice(13)];
+    let offset;
+    if(digits.indexOf(sn4)!=-1){
+        offset=Number(offset);
+    }
+    else{
+        offset=(letters.indexOf(offset)+1)%13;
+    }
+    let half;
+    for(let i=0;i<6;i++){
+        if(prissy[0].includes(encrypted[i])){
+            half=0;
+        }
+        else{
+            half=1;
+        }
+        encrypted+=prissy[(half+1)%2][mod(prissy[half].indexOf(encrypted[i])-offset,13)];
+        d
+    }
     encrypted=s(encrypted);
     return end(encrypted);
 }
