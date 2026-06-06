@@ -38,7 +38,8 @@ const edgeworks=[
     [],
     [],
     ["SERIAL NUMBER"],
-    ["NUMBER OF PORTS","SN FIRST CHARACTER","SN FOURTH CHARACTER"]
+    ["NUMBER OF PORTS","SN FIRST CHARACTER","SN FOURTH CHARACTER"],
+    ["NUMBER OF PORTS","NUMBER OF PORT PLATES","SN THIRD CHARACTER","SN SIXTH CHARACTER"]
 ];
 const lengths=[
     [6,6,0,8,8,8,1,1,1],
@@ -57,7 +58,8 @@ const lengths=[
     [6,1,8,8,8,4],
     [6,8,5,8,8,5,5,5,0],
     [6,2,3,6],
-    [6,8,4,8,0,0,2,1,1]
+    [6,8,4,8,0,0,2,1,1],
+    [6,8,8,6,6,6,6,6,6,7,7,7,2,2,1,1]
 ];
 const allowed=[
     [letters,letters,"",letters,letters,letters,digits,digits,digits],
@@ -76,7 +78,8 @@ const allowed=[
     [letters,digits,letters,letters,letters,letters],
     [letters,letters,letters,letters,letters,letters,letters,letters,""],
     [letters,digits,letters,digits+letters],
-    [letters,letters,digits.slice(1,5),letters,"","",digits,digits+letters,letters]
+    [letters,letters,digits.slice(1,5),letters,"","",digits,digits+letters,letters],
+    [letters,digits.slice(1,7),digits.slice(1,7),letters,letters,letters,letters,letters,letters,letters,letters,digits,digits,digits,digits,digits]
 ];
 const pages=[2,2,2,2,2,2,2,2,2,2,2,3,2,2,3,1,2,4];
 
@@ -1875,6 +1878,88 @@ function coral(edgework,inputs){
     encrypted=s(encrypted);
     return end(encrypted);
 }
+function cream(edgework,inputs){
+    let ports=Number(edgework[0]);
+    let plates=Number(edgework[1]);
+    let sn3=Number(edgework[2]);
+    let sn6=Number(edgework[3]);
+    let encrypted=inputs[0];
+    let num1=inputs[1];
+    let num2=inputs[2];
+    let row1=inputs[3];
+    let row2=inputs[4];
+    let row3=inputs[5];
+    let row4=inputs[6];
+    let row5=inputs[7];
+    let row6=inputs[8];
+    let phone1=inputs[9];
+    let phone2=inputs[10];
+    let numkey=inputs[11];
+    
+    const grid=row1+row2+row3+row4+row5+row6;
+    let key1="";
+    for(let i=0;i<num1.length;i++){
+        key1+=grid[(Number(num1[i])-1)*6+Number(num2[i])-1];
+    }
+    const phone=phone1+phone2;
+    let ens="";
+    for(let i=0;i<phone.length;i++){
+        for(let j=0;j<10;j++){
+            if(["yz","abc","def","ghi","jkl","mno","pqr","st","uv","wx"][j].includes(phone[i])){
+                for(let k=0;k<["yz","abc","def","ghi","jkl","mno","pqr","st","uv","wx"][j].indexOf(phone[i])+1;k++){
+                    ens+=j;
+                }
+            }
+        }
+    }
+    let kns="";
+    for(let i=0;i<ens.length;i++){
+        kns+=numkey.slice(4)[i%3];
+    }
+    let nns="";
+    for(let i=0;i<ens.length;i++){
+        nns+=mod(Number(ens[i])-Number(kns[i]),10);
+    }
+    let key=composekey(grid);
+    let board=["",key.slice(6,16),key.slice(16)];
+    let used=-1;
+    for(let i=0;i<10;i++){
+        board[0]+=numkey.slice(0,4).includes(i)?"-":key[++used];
+    }
+    let key2="";
+    while(nns!=""){
+        if(nns[0]==numkey[0]||nns[0]==numkey[1]){
+            key2+=board[1][Number(nns[1])];
+            nns=nns.slice(2);
+        }
+        else if(nns[0]==numkey[2]||nns[0]==numkey[3]){
+            key2+=board[2][Number(nns[1])];
+            nns=nns.slice(2);
+        }
+        else{
+            key2+=board[0][Number(nns[0])];
+            nns=nns.slice(1);
+        }
+    }
+    let keya=composekey(key1,ports,plates%2);
+    let keyb=composekey(key2,sn3+1,sn6%2);
+    let char1,char2,reserved;
+    for(let i=0;i<6;i++){
+        char2=encrypted[i];
+        char1=keya[keyb.indexOf(char2)];
+        keya=shift(keya,keya.indexOf(char1)+1);
+        keyb=shift(keyb,keyb.indexOf(char2));
+        reserved=keya[2];
+        keya=keya.replace(reserved,"");
+        keya=keya.slice(0,13)+reserved+keya.slice(13);
+        reserved=keyb[1];
+        keyb=keyb.replace(reserved,"");
+        keyb=keyb.slice(0,13)+reserved+keyb.slice(13);
+        encrypted+=char1;
+    }
+    encrypted=s(encrypted);
+    return end(encrypted);
+}
 
 function solve(){
     let inputs=[];
@@ -1926,8 +2011,8 @@ function solve(){
                 return magenta(edgework,inputs);
             case "c":
                 return coral(edgework,inputs);
-            // case "e":
-            //     return cream(edgework,inputs);
+            case "e":
+                return cream(edgework,inputs);
         }
     }
     catch(error){
@@ -2023,12 +2108,12 @@ function recreateEdgeworks(){
         document.querySelector(".edgework").appendChild(noEw);
     }
     document.querySelectorAll(".edgework input").forEach(a=>(a.addEventListener("input",()=>{
-        if(a.value.length>lengths[colors.indexOf(color)][5+Number(a.id[2])]){
-            a.value=a.value.slice(0,lengths[colors.indexOf(color)][5+Number(a.id[2])]);
+        if(a.value.length>lengths[colors.indexOf(color)][pages[colors.indexOf(color)]*3-1+Number(a.id[2])]){
+            a.value=a.value.slice(0,lengths[colors.indexOf(color)][pages[colors.indexOf(color)]*3-1+Number(a.id[2])]);
         }
         a.value=a.value.toUpperCase();
         for(let i=0;i<a.value.length;i++){
-            if(!allowed[colors.indexOf(color)][5+Number(a.id[2])].toUpperCase().includes(a.value[i])){
+            if(!allowed[colors.indexOf(color)][pages[colors.indexOf(color)]*3-1+Number(a.id[2])].toUpperCase().includes(a.value[i])){
                 a.value=a.value.slice(0,i)+"#"+a.value.slice(i+1);
             }
         }
