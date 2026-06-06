@@ -38,7 +38,7 @@ const edgeworks=[
     [],
     [],
     ["SERIAL NUMBER"],
-    ["NUMBER OF PORTS","SN FIRST CHATACTER","SN FOURTH CHARACTER"]
+    ["NUMBER OF PORTS","SN FIRST CHARACTER","SN FOURTH CHARACTER"]
 ];
 const lengths=[
     [6,6,0,8,8,8,1,1,1],
@@ -143,6 +143,13 @@ function rotate(cube,direction){
             break;
     }
     return newcube;
+}
+function aea(count){
+    let nca=[];
+    for(let i=0;i<count;i++){
+        nca.push([]);
+    }
+    return nca
 }
 function s(encrypted,from=6){
     return encrypted.slice(from);
@@ -1116,10 +1123,7 @@ function black(edgework,inputs){
         secondchar=letters.indexOf(secondchar)+10;
     }
     secondchar=secondchar%4+2;
-    let rs=[];
-    for(let i=0;i<secondchar;i++){
-        rs.push([]);
-    }
+    let rs=aea(secondchar);
     for(let i=0;i<6;i++){
         rs[i%secondchar].splice(Math.floor(i/secondchar),0,"#");
     }
@@ -1280,10 +1284,7 @@ function maroon(edgework,inputs){
         encrypted+=letters[str.indexOf(encrypted[i])];
     }
     encrypted=s(encrypted);
-    let shuffled=[];
-    for(let i=0;i<number.length;i++){
-        shuffled.push([]);
-    }
+    let shuffled=aea(number.length);
     let row=1;
     let direction=1;
     for(let i=0;i<6;i++){
@@ -1757,7 +1758,7 @@ function magenta(edgework,inputs){
     encrypted=s(encrypted);
     let earliest;
     let used=0;
-    let grid=[];
+    let grid=aea(snlett.length);
     for(let i=0;i<snlett.length;i++){
         earliest=26;
         for(let j=0;j<snlett.length;j++){
@@ -1769,7 +1770,6 @@ function magenta(edgework,inputs){
             used++;
         }
         snlett=snlett.replaceAll(letters[earliest],String(used-1));
-        grid.push([]);
     }
     for(let i=0;i<6;i++){
         grid[i%grid.length].push("");
@@ -1806,15 +1806,17 @@ function coral(edgework,inputs){
     let sn4=edgework[2];
     let encrypted=inputs[0];
     let prissyword=inputs[1];
+    let key=inputs[2];
+    let kw=inputs[3];
 
     let prissy=composekey(prissyword,ports,1);
     prissy=[prissy.slice(0,13),prissy.slice(13)];
     let offset;
     if(digits.indexOf(sn4)!=-1){
-        offset=Number(offset);
+        offset=Number(sn4);
     }
     else{
-        offset=(letters.indexOf(offset)+1)%13;
+        offset=(letters.indexOf(sn4)+1)%13;
     }
     let half;
     for(let i=0;i<6;i++){
@@ -1825,7 +1827,50 @@ function coral(edgework,inputs){
             half=1;
         }
         encrypted+=prissy[(half+1)%2][mod(prissy[half].indexOf(encrypted[i])-offset,13)];
-        d
+        offset+=(letters.indexOf(encrypted[6+i])+1)%13;
+    }
+    encrypted=s(encrypted);
+    let count=(digits+letters).indexOf(sn1)%2==1?"1212":"2121";
+    let grid=aea(key.length);
+    for(let i=0;i<4;i++){
+        grid[i%key.length].push("-"+(count[i]=="2"?"-":""));
+    }
+    let used=0;
+    for(let i=0;i<key.length;i++){
+        for(let j=0;j<grid[key.indexOf(i+1)].length;j++){
+            grid[key.indexOf(i+1)][j]=encrypted[used]+(grid[key.indexOf(i+1)][j].length==2?encrypted[used+1]:"");
+            used+=1+(grid[key.indexOf(i+1)][j].length==2?1:0);
+        }
+    }
+    for(let i=0;i<2;i++){
+        for(let j=0;j<key.length;j++){
+            encrypted+=grid[j][i]==undefined?"":grid[j][i];
+        }
+    }
+    encrypted=s(encrypted);
+    let pos=aea(kw.length);
+    let usedn=0;
+    for(let i=0;i<26;i++){
+        for(let j=0;j<kw.length;j++){
+            if(kw[j]==letters[i]){
+                pos[j]=usedn;
+                usedn++;
+            }
+        }
+    }
+    let abckey=composekey(kw,ports%4>=2?0:1,0);
+    let newkey="";
+    for(let i=0;i<kw.length;i++){
+        for(let j=0;j<Math.ceil(26/kw.length);j++){
+            newkey+=abckey[j*kw.length+pos.indexOf(i)]==undefined?"":abckey[j*kw.length+pos.indexOf(i)];
+        }
+    }
+    pos=pos.map(a=>a+1).join("").slice(0,3);
+    for(let i=0;i<3;i++){
+        pos+=(Number(pos[i])+Number(pos[i+1]))%10;
+    }
+    for(let i=0;i<6;i++){
+        encrypted+=letters[mod(newkey.indexOf(encrypted[i])-Number(pos[i]),26)];
     }
     encrypted=s(encrypted);
     return end(encrypted);
